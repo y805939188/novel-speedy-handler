@@ -135,10 +135,12 @@ class ChapterCompressor:
     def __init__(
         self, 
         config: Optional[CompressionConfig] = None,
-        style: Optional[str] = None
+        style: Optional[str] = None,
+        continuous_mode: bool = False
     ):
         self.config = config or CompressionConfig()
         self.style = style  # 风格描述
+        self.continuous_mode = continuous_mode  # 整体连贯输出模式
     
     def compress(
         self,
@@ -184,17 +186,18 @@ class ChapterCompressor:
         # 执行压缩
         if strategy == CompressionStrategy.PRESERVE:
             content = self._compress_preserve(
-                chapter_text, chapter_title, target_chars, climax_score, self.style
+                chapter_text, chapter_title, target_chars, climax_score, 
+                self.style, context, self.continuous_mode
             )
         elif strategy == CompressionStrategy.REWRITE:
             content = self._compress_rewrite(
                 chapter_text, chapter_title, target_chars, 
-                climax_score, coolpoint_types, context, self.style
+                climax_score, coolpoint_types, context, self.style, self.continuous_mode
             )
         else:
             content = self._compress_summarize(
                 chapter_text, chapter_title, target_chars,
-                climax_score, coolpoint_types, self.style
+                climax_score, coolpoint_types, self.style, context, self.continuous_mode
             )
         
         # 构建结果
@@ -242,7 +245,9 @@ class ChapterCompressor:
         chapter_title: str,
         target_chars: int,
         climax_score: float,
-        style: Optional[str] = None
+        style: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
+        continuous_mode: bool = False
     ) -> str:
         """保留式压缩：保留关键段落，删除冗余"""
         
@@ -251,13 +256,27 @@ class ChapterCompressor:
         if style:
             style_instruction = f"\n【风格要求】请使用以下风格进行输出：{style}\n"
         
+        # 连贯性过渡提示（整体输出模式）
+        continuity_instruction = ""
+        if continuous_mode and context and context.get("previous_summary"):
+            continuity_instruction = f"""
+【连贯性要求】这是整体连贯输出，请注意与前文的自然衔接。
+前一章结尾：{context['previous_summary']}
+要求：
+- 如果前后内容联系紧密，可直接续写，不必加过渡词
+- 如果有时间/场景跳转，可用“此时”“与此同时”“另一边”等
+- 如果是时间推进，可用“不久后”“第二天”“数日后”等
+- 避免每段都以“随后”开头，要多样化
+- 根据内容自行判断最自然的衔接方式
+"""
+        
         prompt = f"""【任务】精简以下章节内容到约 {target_chars} 字
 
 【章节标题】{chapter_title}
 
 【原文】
 {chapter_text[:self.config.rewrite_max_input_chars]}
-{style_instruction}
+{style_instruction}{continuity_instruction}
 【目标字数】约 {target_chars} 字
 
 请直接输出精简后的内容："""
@@ -282,7 +301,8 @@ class ChapterCompressor:
         climax_score: float,
         coolpoint_types: Optional[List[str]] = None,
         context: Optional[Dict[str, Any]] = None,
-        style: Optional[str] = None
+        style: Optional[str] = None,
+        continuous_mode: bool = False
     ) -> str:
         """重写式压缩：提取核心情节，LLM 重写"""
         
@@ -295,10 +315,19 @@ class ChapterCompressor:
         
         preserve_text = "\n".join(preserve_hints) if preserve_hints else ""
         
-        # 上下文信息
+        # 上下文信息和连贯性提示
         context_text = ""
         if context and context.get("previous_summary"):
-            context_text = f"\n【前情】{context['previous_summary']}\n"
+            if continuous_mode:
+                context_text = f"""
+【前情】{context['previous_summary']}
+【连贯性要求】这是整体连贯输出，请自然衔接前文：
+- 不必每段都加过渡词，内容连贯时可直接续写
+- 根据情节需要自由选择衔接方式（时间跳转、场景切换、因果关系等）
+- 避免重复使用“随后”，要多样化
+"""
+            else:
+                context_text = f"\n【前情】{context['previous_summary']}\n"
         
         # 风格要求
         style_instruction = ""
@@ -330,7 +359,8 @@ class ChapterCompressor:
         except Exception as e:
             logger.warning(f"重写式压缩失败: {e}")
             return self._compress_summarize(
-                chapter_text, chapter_title, target_chars, climax_score, coolpoint_types, style
+                chapter_text, chapter_title, target_chars, climax_score, 
+                coolpoint_types, style, context, continuous_mode
             )
     
     def _compress_summarize(
@@ -340,7 +370,9 @@ class ChapterCompressor:
         target_chars: int,
         climax_score: float,
         coolpoint_types: Optional[List[str]] = None,
-        style: Optional[str] = None
+        style: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
+        continuous_mode: bool = False
     ) -> str:
         """摘要式压缩：纯 LLM 生成剧情摘要"""
         
@@ -354,14 +386,25 @@ class ChapterCompressor:
         if style:
             style_instruction = f"\n【风格要求】请使用以下风格进行摘要：{style}\n"
         
+        # 连贯性过渡提示（整体输出模式）
+        continuity_instruction = ""
+        if continuous_mode and context and context.get("previous_summary"):
+            continuity_instruction = f"""
+【连贯性要求】这是整体连贯输出，请自然衔接前文。
+前一章结尾：{context['previous_summary']}
+要求：
+- 不必每段都加过渡词，内容连贯时可直接续写
+- 根据上下文自行选择最合适的衔接方式
+- 避免重复使用同一个过渡词，要多样化
+"""
+        
         prompt = f"""【任务】用约 {target_chars} 字概括以下章节的核心剧情
 
 【章节标题】{chapter_title}
-
 【原文】
 {chapter_text[:self.config.rewrite_max_input_chars]}
 {coolpoint_hint}
-{style_instruction}
+{style_instruction}{continuity_instruction}
 【目标字数】约 {target_chars} 字
 
 请直接输出摘要："""

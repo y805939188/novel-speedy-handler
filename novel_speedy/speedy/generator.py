@@ -70,7 +70,8 @@ class SpeedyConfig:
     
     # 输出配置
     output_format: str = "markdown"        # 输出格式: markdown, json, txt
-    include_chapter_title: bool = True     # 是否包含章节标题
+    output_mode: str = "chapter"           # 输出模式: chapter(按章节) / continuous(整体连贯)
+    include_chapter_title: bool = True     # 是否包含章节标题（仅 chapter 模式有效）
     include_stats: bool = True             # 是否包含统计信息
     
     # 章节范围
@@ -95,6 +96,7 @@ class SpeedyConfig:
             "outline_budget_ratio": self.outline_budget_ratio,
             "include_outline": self.include_outline,
             "output_format": self.output_format,
+            "output_mode": self.output_mode,
             "style": self.style,
         }
 
@@ -169,13 +171,22 @@ class SpeedyResult:
                     lines.append(f"{arc.summary}\n\n")
         
         # 章节内容
-        lines.append("---\n\n")
-        lines.append("## 📚 章节速读\n\n")
+        is_continuous = self.config and self.config.output_mode == "continuous"
         
-        for ch in self.chapters:
-            if self.config and self.config.include_chapter_title:
-                lines.append(f"### {ch.chapter_title}\n\n")
-            lines.append(f"{ch.content}\n\n")
+        if is_continuous:
+            # 整体连贯模式：不显示章节标题，内容连续输出
+            lines.append("---\n\n")
+            lines.append("## 📚 故事正文\n\n")
+            for ch in self.chapters:
+                lines.append(f"{ch.content}\n\n")
+        else:
+            # 按章节模式
+            lines.append("---\n\n")
+            lines.append("## 📚 章节速读\n\n")
+            for ch in self.chapters:
+                if self.config and self.config.include_chapter_title:
+                    lines.append(f"### {ch.chapter_title}\n\n")
+                lines.append(f"{ch.content}\n\n")
         
         return "".join(lines)
     
@@ -196,12 +207,21 @@ class SpeedyResult:
             lines.append("-" * 40)
             lines.append("")
         
-        # 章节
-        for ch in self.chapters:
-            if self.config and self.config.include_chapter_title:
-                lines.append(f"【{ch.chapter_title}】")
-            lines.append(ch.content)
-            lines.append("")
+        # 章节内容
+        is_continuous = self.config and self.config.output_mode == "continuous"
+        
+        if is_continuous:
+            # 整体连贯模式：不显示章节标题，用换行分隔
+            for ch in self.chapters:
+                lines.append(ch.content)
+                lines.append("")  # 章节间只用一个空行分隔
+        else:
+            # 按章节模式
+            for ch in self.chapters:
+                if self.config and self.config.include_chapter_title:
+                    lines.append(f"【{ch.chapter_title}】")
+                lines.append(ch.content)
+                lines.append("")
         
         return "\n".join(lines)
 
@@ -224,7 +244,8 @@ class SpeedyGenerator:
         
         self.compressor = ChapterCompressor(
             config=self.config.compression_config or CompressionConfig(),
-            style=self.config.style_description  # 传递风格描述
+            style=self.config.style_description,  # 传递风格描述
+            continuous_mode=(self.config.output_mode == "continuous")  # 整体连贯模式
         )
     
     def generate(
@@ -426,6 +447,7 @@ def generate_speedy(
     target_reading_time: float = 30.0,
     reading_speed: int = 300,
     output_format: str = "markdown",
+    output_mode: str = "chapter",
     style: Optional[str] = None
 ) -> SpeedyResult:
     """
@@ -438,6 +460,9 @@ def generate_speedy(
         target_reading_time: 目标阅读时间（分钟）
         reading_speed: 阅读速度（字/分钟）
         output_format: 输出格式
+        output_mode: 输出模式
+                     chapter - 按章节输出，显示章节标题
+                     continuous - 整体连贯输出，不显示章节标题，注重衔接过渡
         style: 输出风格（预设名称或自定义描述）
                预设: pingshu(评书), ancient(古文), humor(幽默), 
                      dramatic(戏剧化), minimalist(极简), storytelling(讲故事)
@@ -449,6 +474,7 @@ def generate_speedy(
         target_reading_time=target_reading_time,
         reading_speed=reading_speed,
         output_format=output_format,
+        output_mode=output_mode,
         style=style,
     )
     

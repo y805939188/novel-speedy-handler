@@ -38,6 +38,8 @@ def main():
     parser.add_argument("-o", "--output", type=str, default="markdown", help="输出格式（markdown/json/txt）")
     parser.add_argument("--style", type=str, default=None, 
                         help="输出风格: pingshu(评书), ancient(古文), humor(幽默), dramatic(戏剧化), minimalist(极简), storytelling(讲故事), 或自定义描述")
+    parser.add_argument("--mode", type=str, default="chapter", choices=["chapter", "continuous"],
+                        help="输出模式: chapter(按章节) / continuous(整体连贯，不显示章节标题)")
     args = parser.parse_args()
     
     console.print("\n" + "🚀" * 20)
@@ -67,6 +69,7 @@ def main():
     console.print(f"⏱️  目标阅读时间: {args.time} 分钟")
     console.print(f"📖 阅读速度: {args.speed} 字/分钟")
     console.print(f"📝 输出格式: {args.output}")
+    console.print(f"📋 输出模式: {args.mode} ({'按章节' if args.mode == 'chapter' else '整体连贯'})")
     if args.style:
         console.print(f"🎭 输出风格: {args.style}")
     
@@ -87,6 +90,7 @@ def main():
         target_reading_time=args.time,
         reading_speed=args.speed,
         output_format=args.output,
+        output_mode=args.mode,
         style=args.style
     )
     
