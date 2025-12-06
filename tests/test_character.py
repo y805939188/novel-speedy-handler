@@ -15,6 +15,9 @@ import argparse
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from rich.console import Console
+from rich.table import Table
+
 from novel_speedy.config import config
 from novel_speedy.chapter_splitter import load_chapters
 from novel_speedy.character import (
@@ -25,17 +28,18 @@ from novel_speedy.character import (
 )
 from typing import List
 
+console = Console()
+
 
 def print_summary_table(results: List[ChapterCharacterAnalysis]):
     """打印测试结果摘要表格"""
-    print("\n")
-    print("=" * 100)
-    print("📊 人物分析结果摘要")
-    print("=" * 100)
     
-    # 表头
-    print(f"{'章节':<6} {'标题':<20} {'人物数':<8} {'主要人物':<40}")
-    print("-" * 100)
+    # 章节人物表格
+    table = Table(title="📊 人物分析结果", show_header=True, header_style="bold cyan")
+    table.add_column("章节", style="dim", width=6)
+    table.add_column("标题", width=20)
+    table.add_column("人物数", justify="right")
+    table.add_column("主要人物", width=45)
     
     # 汇总全书人物
     all_chars = {}
@@ -45,7 +49,7 @@ def print_summary_table(results: List[ChapterCharacterAnalysis]):
         main_char_names = []
         for cv in r.characters:
             if cv.importance_score >= 0.5:
-                main_char_names.append(f"{cv.character_name}({cv.importance_score:.2f})")
+                main_char_names.append(f"[bold]{cv.character_name}[/]({cv.importance_score:.2f})")
             
             # 汇总
             if cv.character_name not in all_chars:
@@ -58,18 +62,29 @@ def print_summary_table(results: List[ChapterCharacterAnalysis]):
             all_chars[cv.character_name]["total_importance"] += cv.importance_score
             all_chars[cv.character_name]["total_screen_time"] += cv.screen_time
         
-        main_str = ", ".join(main_char_names[:4]) if main_char_names else "-"
+        main_str = ", ".join(main_char_names[:3]) if main_char_names else "[dim]-[/]"
         
         # 标题截断
         title = r.chapter_title[:18] + ".." if len(r.chapter_title) > 20 else r.chapter_title
         
-        print(f"{r.chapter_index:<6} {title:<20} {r.total_characters:<8} {main_str:<40}")
+        table.add_row(
+            str(r.chapter_index),
+            title,
+            str(r.total_characters),
+            main_str
+        )
     
-    print("-" * 100)
+    console.print()
+    console.print(table)
     
     # 全书人物统计
-    print(f"\n📈 全书人物统计:")
-    print(f"  识别人物总数: {len(all_chars)}")
+    stats_table = Table(title="📈 全书人物统计", show_header=False, box=None)
+    stats_table.add_column("指标", style="cyan")
+    stats_table.add_column("值", style="bold")
+    stats_table.add_row("识别人物总数", str(len(all_chars)))
+    
+    console.print()
+    console.print(stats_table)
     
     # Top 10 人物
     sorted_chars = sorted(
@@ -78,16 +93,26 @@ def print_summary_table(results: List[ChapterCharacterAnalysis]):
         reverse=True
     )
     
-    print(f"\n🎭 Top 10 重要人物:")
-    print(f"{'排名':<6} {'人物':<15} {'出现章数':<10} {'平均重要性':<12} {'平均戏份':<12}")
-    print("-" * 60)
+    top_table = Table(title="🎭 Top 10 重要人物", show_header=True, header_style="bold magenta")
+    top_table.add_column("排名", style="bold yellow", width=6)
+    top_table.add_column("人物", width=15)
+    top_table.add_column("出现章数", justify="right")
+    top_table.add_column("平均重要性", justify="right", style="green")
+    top_table.add_column("平均戏份", justify="right")
     
     for i, (name, data) in enumerate(sorted_chars[:10], 1):
         avg_importance = data["total_importance"] / data["chapters"]
         avg_screen_time = data["total_screen_time"] / data["chapters"]
-        print(f"{i:<6} {name:<15} {data['chapters']:<10} {avg_importance:<12.2f} {avg_screen_time:<12.2f}")
+        top_table.add_row(
+            str(i),
+            name,
+            str(data['chapters']),
+            f"{avg_importance:.2f}",
+            f"{avg_screen_time:.2f}"
+        )
     
-    print("=" * 100)
+    console.print()
+    console.print(top_table)
 
 
 def main():

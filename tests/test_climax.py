@@ -13,22 +13,31 @@ import argparse
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+
 from novel_speedy.config import config
 from novel_speedy.chapter_splitter import load_chapters
 from novel_speedy.climax import ClimaxAnalyzer, AnalyzerConfig, ChapterClimaxScore
 from typing import List
 
+console = Console()
+
 
 def print_summary_table(results: List[ChapterClimaxScore]):
     """打印测试结果摘要表格"""
-    print("\n")
-    print("=" * 100)
-    print("📊 测试结果摘要")
-    print("=" * 100)
     
-    # 表头
-    print(f"{'章节':<6} {'标题':<25} {'综合分':<8} {'冲突':<8} {'爽点':<8} {'节奏':<8} {'结构':<8} {'标签':<20}")
-    print("-" * 100)
+    # 创建表格
+    table = Table(title="📊 高潮评分结果", show_header=True, header_style="bold cyan")
+    table.add_column("章节", style="dim", width=6)
+    table.add_column("标题", width=22)
+    table.add_column("综合分", justify="right", style="bold")
+    table.add_column("冲突", justify="right")
+    table.add_column("爽点", justify="right")
+    table.add_column("节奏", justify="right")
+    table.add_column("结构", justify="right")
+    table.add_column("标签", width=18)
     
     # 统计
     total_conflict = 0
@@ -65,38 +74,65 @@ def print_summary_table(results: List[ChapterClimaxScore]):
         # 标签
         tags = ", ".join(r.climax_tags[:2]) if r.climax_tags else "-"
         
-        # 高潮标记
-        climax_mark = "🔥" if r.is_climax else "  "
+        # 高潮标记和样式
+        if r.is_climax:
+            chapter_str = f"🔥 {r.chapter_index}"
+            score_style = "bold red"
+        elif r.final_score >= 0.5:
+            chapter_str = f"⬆️ {r.chapter_index}"
+            score_style = "yellow"
+        else:
+            chapter_str = str(r.chapter_index)
+            score_style = "white"
         
         # 标题截断
-        title = r.chapter_title[:22] + "..." if len(r.chapter_title) > 25 else r.chapter_title
+        title = r.chapter_title[:20] + ".." if len(r.chapter_title) > 22 else r.chapter_title
         
-        print(f"{climax_mark}{r.chapter_index:<4} {title:<25} {r.final_score:<8.2f} {conflict_score:<8} {coolpoint_score:<8} {rhythm_score:<8} {structure_score:<8} {tags:<20}")
+        table.add_row(
+            chapter_str,
+            title,
+            f"[{score_style}]{r.final_score:.2f}[/]",
+            conflict_score,
+            coolpoint_score,
+            rhythm_score,
+            structure_score,
+            tags
+        )
     
-    print("-" * 100)
+    console.print()
+    console.print(table)
     
     # 统计信息
     n = len(results)
     climax_count = sum(1 for r in results if r.is_climax)
     avg_score = sum(r.final_score for r in results) / n if n else 0
     
-    print(f"\n📈 统计信息:")
-    print(f"  总章节数: {n}")
-    print(f"  高潮章节: {climax_count} ({climax_count/n*100:.1f}%)" if n else "  高潮章节: 0")
-    print(f"  平均综合分: {avg_score:.2f}")
-    print(f"  平均冲突分: {total_conflict/n:.2f}" if n else "")
-    print(f"  平均爽点分: {total_coolpoint/n:.2f}" if n else "")
-    print(f"  爽点解析成功率: {success_coolpoint}/{n} ({success_coolpoint/n*100:.1f}%)" if n else "")
-    print(f"  平均节奏分: {total_rhythm/n:.2f}" if n else "")
-    print(f"  平均结构分: {total_structure/n:.2f}" if n else "")
+    stats_table = Table(title="📈 统计信息", show_header=False, box=None)
+    stats_table.add_column("指标", style="cyan")
+    stats_table.add_column("值", style="bold")
+    
+    stats_table.add_row("总章节数", str(n))
+    stats_table.add_row("高潮章节", f"{climax_count} ({climax_count/n*100:.1f}%)" if n else "0")
+    stats_table.add_row("平均综合分", f"{avg_score:.2f}")
+    stats_table.add_row("平均冲突分", f"{total_conflict/n:.2f}" if n else "-")
+    stats_table.add_row("平均爽点分", f"{total_coolpoint/n:.2f}" if n else "-")
+    stats_table.add_row("爽点解析成功率", f"{success_coolpoint}/{n} ({success_coolpoint/n*100:.1f}%)" if n else "-")
+    
+    console.print()
+    console.print(stats_table)
     
     # Top 3 章节
     sorted_results = sorted(results, key=lambda r: r.final_score, reverse=True)
-    print(f"\n🏆 Top 3 高分章节:")
-    for i, r in enumerate(sorted_results[:3], 1):
-        print(f"  {i}. 第{r.chapter_index}章 《{r.chapter_title}》 - {r.final_score:.2f}")
+    top_table = Table(title="🏆 Top 3 高分章节", show_header=False, box=None)
+    top_table.add_column("排名", style="bold yellow")
+    top_table.add_column("章节")
+    top_table.add_column("分数", style="bold green")
     
-    print("=" * 100)
+    for i, r in enumerate(sorted_results[:3], 1):
+        top_table.add_row(str(i), f"第{r.chapter_index}章 《{r.chapter_title}》", f"{r.final_score:.2f}")
+    
+    console.print()
+    console.print(top_table)
 
 
 def main():

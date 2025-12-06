@@ -2,22 +2,25 @@
   {
     "chapter_index": 1,
     "chapter_title": "序",
-    "final_score": 0.3695,
+    "final_score": 0.5157,
     "is_climax": false,
-    "climax_tags": [],
-    "summary": "平缓章节，开篇章节（第1章）",
+    "climax_tags": [
+      "隐忍蓄势",
+      "立下誓言/约定"
+    ],
+    "summary": "中等章节，识别到2种爽点类型",
     "dimension_scores": [
       {
         "dimension": "conflict",
         "score": 0.4,
         "confidence": 0.8,
-        "reason": "序章设定背景，冲突尚未展开，但主角内心有坚定目标。"
+        "reason": "序章设定背景，冲突不强，但有潜力。"
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.8,
-        "reason": ""
+        "score": 0.8,
+        "confidence": 0.7,
+        "reason": "识别到2种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -36,24 +39,26 @@
   {
     "chapter_index": 2,
     "chapter_title": "第1章 陨落的天才",
-    "final_score": 0.4863,
-    "is_climax": false,
+    "final_score": 0.6323,
+    "is_climax": true,
     "climax_tags": [
+      "尊严维护",
+      "隐忍蓄势",
       "激烈冲突"
     ],
-    "summary": "中等章节，强烈的内心挣扎与外界的冷漠形成鲜明对比，危机感强烈，但转折稍显温和。",
+    "summary": "高潮章节，强烈的内心挣扎与外界的嘲讽形成鲜明对比，危机感强烈，但转折稍显温和。",
     "dimension_scores": [
       {
         "dimension": "conflict",
         "score": 0.85,
         "confidence": 0.9,
-        "reason": "强烈的内心挣扎与外界的冷漠形成鲜明对比，危机感强烈，但转折稍显温和。"
+        "reason": "强烈的内心挣扎与外界的嘲讽形成鲜明对比，危机感强烈，但转折稍显温和。"
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.8,
-        "reason": ""
+        "score": 0.8,
+        "confidence": 0.7,
+        "reason": "识别到2种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -72,24 +77,26 @@
   {
     "chapter_index": 3,
     "chapter_title": "第2章 斗气大陆",
-    "final_score": 0.4288,
+    "final_score": 0.5695,
     "is_climax": false,
     "climax_tags": [
+      "尊严维护",
+      "隐忍蓄势",
       "激烈冲突"
     ],
-    "summary": "中等章节，内部冲突强烈，主角面临重大心理挑战；外部冲突较弱，但危机感明显。",
+    "summary": "中等章节，识别到2种爽点类型",
     "dimension_scores": [
       {
         "dimension": "conflict",
         "score": 0.75,
-        "confidence": 0.9,
-        "reason": "内部冲突强烈，主角面临重大心理挑战；外部冲突较弱，但危机感明显。"
+        "confidence": 0.85,
+        "reason": "强烈的内心挣扎与未来的危机感，外部冲突较少但存在家庭压力。"
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.8,
-        "reason": ""
+        "score": 0.8,
+        "confidence": 0.7,
+        "reason": "识别到2种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -108,12 +115,14 @@
   {
     "chapter_index": 4,
     "chapter_title": "第3章 客人",
-    "final_score": 0.379,
+    "final_score": 0.5232,
     "is_climax": false,
     "climax_tags": [
-      "激烈冲突"
+      "获得强援",
+      "激烈冲突",
+      "身份揭露/认可"
     ],
-    "summary": "平缓章节，内外部冲突明显，尤其是萧炎内心的挣扎和家族地位的下降。",
+    "summary": "中等章节，识别到2种爽点类型",
     "dimension_scores": [
       {
         "dimension": "conflict",
@@ -123,9 +132,9 @@
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.8,
-        "reason": ""
+        "score": 0.8,
+        "confidence": 0.7,
+        "reason": "识别到2种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -144,13 +153,15 @@
   {
     "chapter_index": 5,
     "chapter_title": "第4章 云岚宗",
-    "final_score": 0.5125,
-    "is_climax": false,
+    "final_score": 0.6596,
+    "is_climax": true,
     "climax_tags": [
-      "激烈冲突",
-      "关键转折"
+      "尊严维护",
+      "隐忍蓄势",
+      "关键转折",
+      "激烈冲突"
     ],
-    "summary": "中等章节，中间转折位置（50.0%）",
+    "summary": "高潮章节，中间转折位置（50.0%）",
     "dimension_scores": [
       {
         "dimension": "conflict",
@@ -160,9 +171,9 @@
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.8,
-        "reason": ""
+        "score": 0.8,
+        "confidence": 0.7,
+        "reason": "识别到2种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -181,24 +192,26 @@
   {
     "chapter_index": 6,
     "chapter_title": "第5章 聚气散",
-    "final_score": 0.4527,
+    "final_score": 0.5793,
     "is_climax": false,
     "climax_tags": [
+      "尊严维护",
+      "反打脸/主动反击",
       "激烈冲突"
     ],
-    "summary": "中等章节，婚约解除要求引发强烈外部与内部冲突，危机感强烈，转折明显。",
+    "summary": "中等章节，婚约解除请求引发强烈外部与内部冲突，危机感强烈，转折明显。",
     "dimension_scores": [
       {
         "dimension": "conflict",
         "score": 0.85,
         "confidence": 0.9,
-        "reason": "婚约解除要求引发强烈外部与内部冲突，危机感强烈，转折明显。"
+        "reason": "婚约解除请求引发强烈外部与内部冲突，危机感强烈，转折明显。"
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.5,
-        "reason": "二次解析失败"
+        "score": 0.8,
+        "confidence": 0.7,
+        "reason": "识别到2种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -217,24 +230,26 @@
   {
     "chapter_index": 7,
     "chapter_title": "第6章 炼药师",
-    "final_score": 0.4099,
+    "final_score": 0.5363,
     "is_climax": false,
     "climax_tags": [
+      "尊严维护",
+      "反打脸/主动反击",
       "激烈冲突"
     ],
-    "summary": "中等章节，外部冲突明显，内部冲突和危机程度较高，转折点较强。",
+    "summary": "中等章节，识别到2种爽点类型",
     "dimension_scores": [
       {
         "dimension": "conflict",
         "score": 0.75,
-        "confidence": 0.9,
+        "confidence": 0.85,
         "reason": "外部冲突明显，内部冲突和危机程度较高，转折点较强。"
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.5,
-        "reason": "二次解析失败"
+        "score": 0.8,
+        "confidence": 0.7,
+        "reason": "识别到2种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -253,12 +268,14 @@
   {
     "chapter_index": 8,
     "chapter_title": "第7章 休！",
-    "final_score": 0.449,
-    "is_climax": false,
+    "final_score": 0.6036,
+    "is_climax": true,
     "climax_tags": [
+      "尊严维护",
+      "反打脸/主动反击",
       "激烈冲突"
     ],
-    "summary": "中等章节，强烈的言语冲突，角色内心挣扎明显，危机感强烈，剧情转折有力。",
+    "summary": "高潮章节，识别到3种爽点类型",
     "dimension_scores": [
       {
         "dimension": "conflict",
@@ -268,9 +285,9 @@
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.5,
-        "reason": "二次解析失败"
+        "score": 0.9,
+        "confidence": 0.7,
+        "reason": "识别到3种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -289,24 +306,26 @@
   {
     "chapter_index": 9,
     "chapter_title": "第8章 神秘的老者",
-    "final_score": 0.4699,
+    "final_score": 0.5951,
     "is_climax": false,
     "climax_tags": [
-      "激烈冲突"
+      "突破困境",
+      "激烈冲突",
+      "立下誓言/约定"
     ],
-    "summary": "中等章节，内部冲突强烈，外部冲突适中，危机感明显，转折点有力。",
+    "summary": "中等章节，强烈的内心挣扎与外部神秘力量的出现，形成高度冲突与转折。",
     "dimension_scores": [
       {
         "dimension": "conflict",
         "score": 0.85,
         "confidence": 0.9,
-        "reason": "内部冲突强烈，外部冲突适中，危机感明显，转折点有力。"
+        "reason": "强烈的内心挣扎与外部神秘力量的出现，形成高度冲突与转折。"
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.5,
-        "reason": "二次解析失败"
+        "score": 0.8,
+        "confidence": 0.7,
+        "reason": "识别到2种爽点类型"
       },
       {
         "dimension": "rhythm",
@@ -325,13 +344,15 @@
   {
     "chapter_index": 10,
     "chapter_title": "第9章 药老！",
-    "final_score": 0.5459,
-    "is_climax": false,
+    "final_score": 0.6952,
+    "is_climax": true,
     "climax_tags": [
+      "获得奇遇/宝物",
+      "获得强援",
       "激烈冲突",
       "关键转折"
     ],
-    "summary": "中等章节，高潮位置（100.0%）",
+    "summary": "高潮章节，识别到3种爽点类型",
     "dimension_scores": [
       {
         "dimension": "conflict",
@@ -341,9 +362,9 @@
       },
       {
         "dimension": "coolpoint",
-        "score": 0.3,
-        "confidence": 0.5,
-        "reason": "二次解析失败"
+        "score": 0.9,
+        "confidence": 0.7,
+        "reason": "识别到3种爽点类型"
       },
       {
         "dimension": "rhythm",

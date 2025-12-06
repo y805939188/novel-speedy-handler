@@ -1,0 +1,26 @@
+{
+  "chapters": [
+    {
+      "chapter_index": 1,
+      "chapter_title": "序",
+      "original_chars": 222,
+      "compressed_chars": 22,
+      "compression_ratio": 0.099,
+      "strategy_used": "summarize",
+      "content": "15岁萧家少年立誓，从废物走向斗气大陆巅峰。",
+      "key_points": []
+    },
+    {
+      "chapter_index": 2,
+      "chapter_title": "第1章 陨落的天才",
+      "original_chars": 2950,
+      "compressed_chars": 193,
+      "compression_ratio": 0.065,
+      "strategy_used": "summarize",
+      "content": "萧炎在家族测验中仅展现出三段斗之力，遭到众人嘲笑和轻视。三年前他曾是家族百年内最年轻的斗者，但因斗之气旋消失，实力大幅下降，从天才沦为废物。萧媚测得七段斗之气，成为家族重点培养对象，对萧炎态度冷漠。萧薰儿测得九段斗之气，被誉为家族年轻一辈第一人，却依然对萧炎保持尊敬，鼓励他重拾信心。萧炎自嘲回应，表示已无力改变现状，萧薰儿则坚信他会重新站起来。最终，萧薰儿追上萧炎，与他并肩离开广场。",
+      "key_points": []
+    }
+  ],
+  "total_original_chars": 3172,
+  "total_compressed_chars": 215
+}

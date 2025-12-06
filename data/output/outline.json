@@ -1,0 +1,55 @@
+{
+  "title": "斗破苍穹",
+  "total_chapters": 10,
+  "total_chars": 27739,
+  "overview": "《斗破苍穹》讲述了15岁的萧家少年萧炎，从家族废物到斗气大陆巅峰的传奇之路。在乌坦城，萧炎因家族测验失败和纳兰嫣然解除婚约的羞辱，立下复仇誓言。后山偶遇神秘老者药老，得知斗之气被吸收的真相，拜其为师，决心在三年内提升实力，挑战纳兰嫣然。",
+  "story_arcs": [
+    {
+      "arc_index": 1,
+      "arc_name": "第1卷",
+      "start_chapter": 1,
+      "end_chapter": 10,
+      "summary": "萧炎在家族测验中表现不佳，遭受嘲笑。纳兰嫣然解除婚约，令他愤怒，决定三年后挑战她。后山遇神秘老者药老，得知斗之气被吸收，达成协议，药老承诺助其一年内提升至七段斗之气。萧炎拜药老为师，开始修炼。时间跨度为数月，地点主要在乌坦城及后山。",
+      "key_events": []
+    }
+  ],
+  "chapter_summaries": [
+    {
+      "chapter_index": 2,
+      "chapter_title": "第1章 陨落的天才",
+      "summary": "萧炎在家族测验中仅展现出三段斗之力，遭受众人嘲笑，昔日天才少年如今沦为家族笑柄。",
+      "climax_score": 0.632,
+      "is_key_chapter": true
+    },
+    {
+      "chapter_index": 5,
+      "chapter_title": "第4章 云岚宗",
+      "summary": "萧炎得知云岚宗来人是为了纳兰嫣然解除婚约，心中愤怒，而熏儿则安慰他并透露纳兰嫣然的背景。",
+      "climax_score": 0.66,
+      "is_key_chapter": true
+    },
+    {
+      "chapter_index": 8,
+      "chapter_title": "第7章 休！",
+      "summary": "萧炎因纳兰嫣然的侮辱而愤怒，最终决定休掉她，并立下血契，承诺三年后去云岚宗挑战她。",
+      "climax_score": 0.604,
+      "is_key_chapter": true
+    },
+    {
+      "chapter_index": 9,
+      "chapter_title": "第8章 神秘的老者",
+      "summary": "萧炎在后山遇到神秘老者，得知三年斗之气被其吸收，愤怒之余达成协议，老者承诺助其一年内提升斗之气。",
+      "climax_score": 0.595,
+      "is_key_chapter": false
+    },
+    {
+      "chapter_index": 10,
+      "chapter_title": "第9章 药老！",
+      "summary": "萧炎因意外达到炼药师条件，拜神秘老者药老为师，得知自己三年实力倒退实为根基更扎实，药老承诺助其一年内达七段斗之气。",
+      "climax_score": 0.695,
+      "is_key_chapter": true
+    }
+  ],
+  "outline_chars": 464,
+  "key_chapters_count": 5
+}

@@ -1,0 +1,70 @@
+{
+  "book_title": "斗破苍穹",
+  "generated_at": "2025-12-06 21:10:16",
+  "config": {
+    "target_reading_time": 2.0,
+    "reading_speed": 300,
+    "outline_budget_ratio": 0.05,
+    "include_outline": true,
+    "output_format": "markdown",
+    "style": "pingshu"
+  },
+  "outline": {
+    "title": "斗破苍穹",
+    "total_chapters": 3,
+    "total_chars": 7040,
+    "overview": "少年萧炎誓立斗",
+    "story_arcs": [
+      {
+        "arc_index": 1,
+        "arc_name": "第1卷",
+        "start_chapter": 1,
+        "end_chapter": 3,
+        "summary": "萧炎测验斗气，",
+        "key_events": []
+      }
+    ],
+    "chapter_summaries": [],
+    "outline_chars": 14,
+    "key_chapters_count": 0
+  },
+  "chapters": [
+    {
+      "chapter_index": 1,
+      "chapter_title": "序",
+      "original_chars": 222,
+      "compressed_chars": 172,
+      "compression_ratio": 0.775,
+      "strategy_used": "preserve",
+      "content": "话说这书名为《斗破苍穹》，作者乃天蚕土豆。且说这故事中，年仅十五岁的萧家少年，曾被视作废物，却在此地立下誓言，誓要从今往后，一步步走向斗气大陆的巅峰！这里，没有花哨艳丽的魔法，唯有繁衍至巅峰的斗气。看官们可曾想过，异界的斗气发展到极致，会是何等境地？且听分解：一至九段斗之气，斗者，斗师，大斗师，斗灵，斗王，斗皇，斗宗，斗尊，半圣，斗圣，斗帝。",
+      "key_points": []
+    },
+    {
+      "chapter_index": 2,
+      "chapter_title": "第1章 陨落的天才",
+      "original_chars": 2950,
+      "compressed_chars": 200,
+      "compression_ratio": 0.068,
+      "strategy_used": "summarize",
+      "content": "话说乌坦城萧家，昔日天才少年萧炎，今朝却因斗之气旋消失，实力大退，沦为家族笑柄。测验场上，萧炎斗之力仅三段，遭众人嘲讽，心中苦涩难言。且说萧媚，斗之气七段，春风得意，却对萧炎昔日辉煌心存感慨。再看萧薰儿，斗之气九段，风采卓然，却不忘旧情，对萧炎恭敬有加，勉励他重拾信心。萧炎自嘲不已，感叹世态炎凉，但萧薰儿一番温暖话语，令他心中泛起涟漪。看官，这少年的落魄与坚持，又将如何书写新的传奇？且听下回分解。",
+      "key_points": []
+    },
+    {
+      "chapter_index": 3,
+      "chapter_title": "第2章 斗气大陆",
+      "original_chars": 3868,
+      "compressed_chars": 202,
+      "compression_ratio": 0.052,
+      "strategy_used": "summarize",
+      "content": "话说斗气大陆，萧炎夜半独坐山崖，心中暗自感叹十五年岁月。原来，萧炎并非此界之人，而是穿越而来。在这片斗气为尊的大陆上，萧炎虽有两世经验，灵魂强大，却因未知原因，斗之气修炼停滞不前，从天才沦为废物。且说萧炎心中苦闷，忽闻父亲萧战前来，父子二人一番对话，谈及成年仪式及家族规矩，萧炎誓言一年内达到七段斗之气，以求逆转命运。看官，正当萧炎立下誓言之际，手指上的黑色古戒竟悄然发出微弱光芒，预示着未来或将有奇遇。",
+      "key_points": []
+    }
+  ],
+  "stats": {
+    "total_original_chars": 7040,
+    "total_compressed_chars": 588,
+    "total_chapters": 3,
+    "reading_time_minutes": 2.0,
+    "compression_ratio": 0.084
+  }
+}
