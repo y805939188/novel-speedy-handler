@@ -18,6 +18,23 @@ from novel_speedy.chapter_splitter import (
 from novel_speedy.scene_extractor import Scene, extract_scenes_from_chapter
 from novel_speedy.scene_grouping import ChapterGroup, group_chapters
 from novel_speedy.pipeline import process_chapters, save_results
+from novel_speedy.budget import (
+    BudgetConfig,
+    BudgetPlan,
+    ChapterBudget,
+    BudgetAllocator,
+    calculate_budget,
+    estimate_reading_time,
+    format_time
+)
+from novel_speedy.climax import (
+    ClimaxAnalyzer,
+    AnalyzerConfig,
+    ChapterClimaxScore,
+    ScoreDimension,
+    analyze_chapter,
+    analyze_chapters
+)
 
 __all__ = [
     # 版本
@@ -39,6 +56,21 @@ __all__ = [
     # 场景分组
     "ChapterGroup",
     "group_chapters",
+    # 篇幅预算
+    "BudgetConfig",
+    "BudgetPlan",
+    "ChapterBudget",
+    "BudgetAllocator",
+    "calculate_budget",
+    "estimate_reading_time",
+    "format_time",
+    # 高潮识别
+    "ClimaxAnalyzer",
+    "AnalyzerConfig",
+    "ChapterClimaxScore",
+    "ScoreDimension",
+    "analyze_chapter",
+    "analyze_chapters",
     # 流程
     "process_chapters",
     "save_results",

@@ -1,0 +1,181 @@
+[
+  {
+    "chapter_index": 1,
+    "chapter_title": "序",
+    "final_score": 0.3788,
+    "is_climax": false,
+    "climax_tags": [],
+    "summary": "平缓章节，开篇章节（第1章）",
+    "dimension_scores": [
+      {
+        "dimension": "conflict",
+        "score": 0.4,
+        "confidence": 0.8,
+        "reason": "序章设定背景，冲突不强，但有潜力。"
+      },
+      {
+        "dimension": "coolpoint",
+        "score": 0.3,
+        "confidence": 0.5,
+        "reason": "二次解析失败"
+      },
+      {
+        "dimension": "rhythm",
+        "score": 0.1667,
+        "confidence": 0.9,
+        "reason": "短句密集"
+      },
+      {
+        "dimension": "structure",
+        "score": 0.7,
+        "confidence": 0.95,
+        "reason": "开篇章节（第1章）"
+      }
+    ]
+  },
+  {
+    "chapter_index": 2,
+    "chapter_title": "第1章 陨落的天才",
+    "final_score": 0.4863,
+    "is_climax": false,
+    "climax_tags": [
+      "激烈冲突"
+    ],
+    "summary": "中等章节，强烈的内心挣扎与外界的嘲讽形成鲜明对比，危机感强烈，但转折稍显温和。",
+    "dimension_scores": [
+      {
+        "dimension": "conflict",
+        "score": 0.85,
+        "confidence": 0.9,
+        "reason": "强烈的内心挣扎与外界的嘲讽形成鲜明对比，危机感强烈，但转折稍显温和。"
+      },
+      {
+        "dimension": "coolpoint",
+        "score": 0.3,
+        "confidence": 0.8,
+        "reason": ""
+      },
+      {
+        "dimension": "rhythm",
+        "score": 0.1902,
+        "confidence": 0.9,
+        "reason": "节奏平缓"
+      },
+      {
+        "dimension": "structure",
+        "score": 0.6,
+        "confidence": 0.95,
+        "reason": "开篇章节（第2章）"
+      }
+    ]
+  },
+  {
+    "chapter_index": 3,
+    "chapter_title": "第2章 斗气大陆",
+    "final_score": 0.4099,
+    "is_climax": false,
+    "climax_tags": [
+      "激烈冲突"
+    ],
+    "summary": "中等章节，内部冲突强烈，主角面临身份认同和未来前景的双重压力。",
+    "dimension_scores": [
+      {
+        "dimension": "conflict",
+        "score": 0.7,
+        "confidence": 0.85,
+        "reason": "内部冲突强烈，主角面临身份认同和未来前景的双重压力。"
+      },
+      {
+        "dimension": "coolpoint",
+        "score": 0.3,
+        "confidence": 0.8,
+        "reason": ""
+      },
+      {
+        "dimension": "rhythm",
+        "score": 0.1427,
+        "confidence": 0.9,
+        "reason": "节奏平缓"
+      },
+      {
+        "dimension": "structure",
+        "score": 0.5,
+        "confidence": 0.95,
+        "reason": "开篇章节（第3章）"
+      }
+    ]
+  },
+  {
+    "chapter_index": 4,
+    "chapter_title": "第3章 客人",
+    "final_score": 0.3894,
+    "is_climax": false,
+    "climax_tags": [
+      "激烈冲突"
+    ],
+    "summary": "平缓章节，内外部冲突明显，尤其是萧炎内心的挣扎和家族地位的下降。",
+    "dimension_scores": [
+      {
+        "dimension": "conflict",
+        "score": 0.7,
+        "confidence": 0.85,
+        "reason": "内外部冲突明显，尤其是萧炎内心的挣扎和家族地位的下降。"
+      },
+      {
+        "dimension": "coolpoint",
+        "score": 0.3,
+        "confidence": 0.5,
+        "reason": "二次解析失败"
+      },
+      {
+        "dimension": "rhythm",
+        "score": 0.1126,
+        "confidence": 0.9,
+        "reason": "节奏平缓"
+      },
+      {
+        "dimension": "structure",
+        "score": 0.37,
+        "confidence": 0.95,
+        "reason": "开篇章节（第4章）"
+      }
+    ]
+  },
+  {
+    "chapter_index": 5,
+    "chapter_title": "第4章 云岚宗",
+    "final_score": 0.5125,
+    "is_climax": false,
+    "climax_tags": [
+      "关键转折",
+      "激烈冲突"
+    ],
+    "summary": "中等章节，高潮位置（100.0%）",
+    "dimension_scores": [
+      {
+        "dimension": "conflict",
+        "score": 0.75,
+        "confidence": 0.9,
+        "reason": "内外部冲突明显，尤其是萧炎内心的挣扎和对未来的担忧。"
+      },
+      {
+        "dimension": "coolpoint",
+        "score": 0.3,
+        "confidence": 0.8,
+        "reason": ""
+      },
+      {
+        "dimension": "rhythm",
+        "score": 0.1924,
+        "confidence": 0.9,
+        "reason": "短句密集"
+      },
+      {
+        "dimension": "structure",
+        "score": 0.9,
+        "confidence": 0.95,
+        "reason": "高潮位置（100.0%）"
+      }
+    ]
+  }
+]

@@ -68,11 +68,3 @@ coverage.xml
 
 # Jupyter Notebook
 .ipynb_checkpoints
-
-# 旧文件（迁移后可删除）
-project/
-split_chapter_outputs/
-scene_extractor_outpus/
-split_chapters.py
-step2.md
-test.py
