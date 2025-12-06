@@ -1,0 +1,13 @@
+# novel-speedy-handler 依赖
+
+# HTTP 请求
+requests>=2.28.0
+
+# 环境变量管理
+python-dotenv>=1.0.0
+
+# 后续可能用到的依赖（暂时注释）
+# pydantic>=2.0.0      # 数据验证
+# aiohttp>=3.8.0       # 异步请求（并发支持）
+# tqdm>=4.65.0         # 进度条
+# rich>=13.0.0         # 美化输出

@@ -1,0 +1,400 @@
+[
+  {
+    "group_index": 1,
+    "chapters": [
+      1,
+      2
+    ],
+    "group_scenes": [
+      {
+        "scene_index": 1,
+        "summary": "15岁萧家少年立誓走向斗气巅峰。",
+        "characters": [
+          "萧家少年"
+        ],
+        "location": "斗气大陆",
+        "topic": "誓言"
+      },
+      {
+        "scene_index": 1,
+        "summary": "萧炎测验斗之力，结果令人失望。",
+        "characters": [
+          "萧炎",
+          "中年男子"
+        ],
+        "location": "广场",
+        "topic": "测验"
+      },
+      {
+        "scene_index": 2,
+        "summary": "萧媚测验斗之气，成绩优秀。",
+        "characters": [
+          "萧媚",
+          "测验员"
+        ],
+        "location": "广场",
+        "topic": "测验"
+      },
+      {
+        "scene_index": 3,
+        "summary": "萧薰儿测验斗之气，成绩优异。",
+        "characters": [
+          "萧薰儿",
+          "测验员"
+        ],
+        "location": "广场",
+        "topic": "测验"
+      },
+      {
+        "scene_index": 4,
+        "summary": "萧薰儿鼓励萧炎，萧炎自嘲回应。",
+        "characters": [
+          "萧炎",
+          "萧薰儿"
+        ],
+        "location": "广场",
+        "topic": "对话"
+      }
+    ]
+  },
+  {
+    "group_index": 2,
+    "chapters": [
+      3
+    ],
+    "group_scenes": [
+      {
+        "scene_index": 1,
+        "summary": "萧炎夜观星空，回忆穿越经历。",
+        "characters": [
+          "萧炎"
+        ],
+        "location": "山崖之颠",
+        "topic": "回忆"
+      },
+      {
+        "scene_index": 2,
+        "summary": "萧炎对夜空咆哮，宣泄情绪。",
+        "characters": [
+          "萧炎"
+        ],
+        "location": "山崖之颠",
+        "topic": "情感宣泄"
+      },
+      {
+        "scene_index": 3,
+        "summary": "萧炎与父亲萧战对话，讨论未来。",
+        "characters": [
+          "萧炎",
+          "萧战"
+        ],
+        "location": "山崖之颠",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 4,
+        "summary": "萧炎抚摸母亲留下的戒指，决心努力。",
+        "characters": [
+          "萧炎"
+        ],
+        "location": "山崖之颠",
+        "topic": "决心"
+      }
+    ]
+  },
+  {
+    "group_index": 3,
+    "chapters": [
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "group_scenes": [
+      {
+        "scene_index": 1,
+        "summary": "少年修炼斗之气，戒指发光。",
+        "characters": [
+          "萧炎"
+        ],
+        "location": "房间",
+        "topic": "修炼"
+      },
+      {
+        "scene_index": 2,
+        "summary": "萧炎被族长召见，前往大厅。",
+        "characters": [
+          "萧炎",
+          "墨管家"
+        ],
+        "location": "后院至大厅",
+        "topic": "转场"
+      },
+      {
+        "scene_index": 3,
+        "summary": "萧炎在大厅见到贵客，惊讶于老者的实力。",
+        "characters": [
+          "萧炎",
+          "萧战",
+          "长老们",
+          "贵客"
+        ],
+        "location": "大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 4,
+        "summary": "萧熏儿为萧炎解围，回忆往事。",
+        "characters": [
+          "萧炎",
+          "萧熏儿"
+        ],
+        "location": "大厅角落",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 1,
+        "summary": "萧战与云岚宗老者交谈，气氛紧张。",
+        "characters": [
+          "萧战",
+          "三位长老",
+          "陌生老者",
+          "纳兰嫣然"
+        ],
+        "location": "大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 2,
+        "summary": "萧炎与熏儿讨论云岚宗来意。",
+        "characters": [
+          "萧炎",
+          "熏儿"
+        ],
+        "location": "大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 3,
+        "summary": "熏儿揭示纳兰嫣然身份及婚约背景。",
+        "characters": [
+          "萧炎",
+          "熏儿"
+        ],
+        "location": "大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 4,
+        "summary": "萧炎对纳兰嫣然解除婚约的意图感到愤怒。",
+        "characters": [
+          "萧炎",
+          "熏儿",
+          "纳兰嫣然",
+          "陌生老者"
+        ],
+        "location": "大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 1,
+        "summary": "葛叶请求萧战解除与纳兰嫣然的婚约。",
+        "characters": [
+          "葛叶",
+          "萧战",
+          "纳兰嫣然"
+        ],
+        "location": "萧家大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 2,
+        "summary": "萧战愤怒，但被长老劝阻。",
+        "characters": [
+          "萧战",
+          "三位长老"
+        ],
+        "location": "萧家大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 3,
+        "summary": "萧战同意解除婚约，葛叶送上聚气散。",
+        "characters": [
+          "萧战",
+          "葛叶"
+        ],
+        "location": "萧家大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 1,
+        "summary": "介绍聚气散及其作用",
+        "characters": [],
+        "location": "古匣子内",
+        "topic": "说明"
+      },
+      {
+        "scene_index": 2,
+        "summary": "介绍炼药师的稀有和条件",
+        "characters": [],
+        "location": "斗气大陆",
+        "topic": "说明"
+      },
+      {
+        "scene_index": 3,
+        "summary": "萧炎拒绝葛叶的提议",
+        "characters": [
+          "萧炎",
+          "葛叶",
+          "三位长老"
+        ],
+        "location": "大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 4,
+        "summary": "纳兰嫣然提出解除婚约的条件",
+        "characters": [
+          "萧炎",
+          "纳兰嫣然",
+          "三位长老"
+        ],
+        "location": "大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 1,
+        "summary": "萧炎因纳兰嫣然的侮辱而愤怒，但最终选择隐忍。",
+        "characters": [
+          "萧炎",
+          "纳兰嫣然",
+          "萧战"
+        ],
+        "location": "萧家大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 2,
+        "summary": "纳兰嫣然提出三年后挑战的约定，萧炎拒绝并写下休书。",
+        "characters": [
+          "萧炎",
+          "纳兰嫣然",
+          "萧战"
+        ],
+        "location": "萧家大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 3,
+        "summary": "萧炎向父亲磕头，承诺三年后洗刷耻辱。",
+        "characters": [
+          "萧炎",
+          "萧战"
+        ],
+        "location": "萧家大厅",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 4,
+        "summary": "紫裙少女警告纳兰嫣然，葛叶等人惊恐逃离。",
+        "characters": [
+          "紫裙少女",
+          "纳兰嫣然",
+          "葛叶"
+        ],
+        "location": "萧家大厅",
+        "topic": "对话"
+      }
+    ]
+  },
+  {
+    "group_index": 4,
+    "chapters": [
+      9,
+      10
+    ],
+    "group_scenes": [
+      {
+        "scene_index": 1,
+        "summary": "萧炎独自坐在后山，回忆被纳兰嫣然羞辱的情景。",
+        "characters": [
+          "萧炎"
+        ],
+        "location": "家族后山",
+        "topic": "回忆"
+      },
+      {
+        "scene_index": 2,
+        "summary": "神秘老者在萧炎的戒指中出现，引起萧炎的愤怒。",
+        "characters": [
+          "萧炎",
+          "神秘老者"
+        ],
+        "location": "家族后山",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 3,
+        "summary": "萧炎与老者谈判，要求帮助提升斗之气。",
+        "characters": [
+          "萧炎",
+          "神秘老者"
+        ],
+        "location": "家族后山",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 4,
+        "summary": "老者提出让萧炎成为炼药师的建议。",
+        "characters": [
+          "萧炎",
+          "神秘老者"
+        ],
+        "location": "家族后山",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 1,
+        "summary": "萧炎得知自己勉强够格成为炼药师。",
+        "characters": [
+          "萧炎",
+          "药老"
+        ],
+        "location": "未知地点",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 2,
+        "summary": "萧炎正式拜药老为师。",
+        "characters": [
+          "萧炎",
+          "药老"
+        ],
+        "location": "未知地点",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 3,
+        "summary": "药老介绍萧炎如何在一年内达到七段斗之气。",
+        "characters": [
+          "萧炎",
+          "药老"
+        ],
+        "location": "未知地点",
+        "topic": "对话"
+      },
+      {
+        "scene_index": 4,
+        "summary": "药老要求萧炎准备材料，萧炎感到为难。",
+        "characters": [
+          "萧炎",
+          "药老"
+        ],
+        "location": "山顶",
+        "topic": "对话"
+      }
+    ]
+  }
+]
