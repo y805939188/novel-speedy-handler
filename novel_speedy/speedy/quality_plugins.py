@@ -6,11 +6,12 @@
 插件串行执行，每个插件调用 LLM 进行检查。
 """
 
+import re
 import json
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 
 from novel_speedy.llm_client import call_llm
 
@@ -161,7 +162,7 @@ class CoherencePlugin(QualityPlugin):
 - 上一章没有离别场景，当前章说"离开那里之后"
 - 上一章没有获得任何功法/技能，当前章说"掌握了新功法"
 - 上一章没有任何敌人出现，当前章说"击败敌人后"
-- 当前章节开头是"主角得知了某件事"，但是在上一章完全没提这件事
+- 当前章节开头是"主角得知了【关键词】"，但是在上一章完全没提到【关键词】
 - 当前章说"经过一番苦战"，但上一章完全没提到任何战斗
 - 当前章说"师父传授完毕后"，但上一章没有任何传授/教导场景
 - 当前章说"服下丹药后"，但上一章没提到获得或服用丹药
@@ -254,6 +255,210 @@ class CoherencePlugin(QualityPlugin):
                 
         except Exception as e:
             logger.warning(f"      ⚠️ 连贯性检查调用失败: {e}，默认通过")
+            return QualityCheckResult(passed=True, plugin_name=self.name)
+
+
+class DialogueAttributionPlugin(QualityPlugin):
+    """对话归属检查插件 - 检查摘要中的对话是否正确归属于说话者"""
+    
+    name = "dialogue_attribution"
+    
+    SYSTEM_PROMPT = """你是一名专业的小说内容校对员。你的任务是检查摘要中的对话是否正确归属于说话者。
+
+【检查任务】
+我会给你：
+1. 原文内容
+2. 摘要中提取的对话列表（包含说话者和台词内容）
+
+请逐一检查每句台词，判断在原文中这句话是否确实是该说话者说的。
+
+【检查要点】
+1. 检查原文中这句话或相似的话是否存在
+2. 检查原文中说这句话的人是否与摘要标注的说话者一致
+3. 如果说话者是代词（如"他"、"她"），根据上下文判断是否指向正确的人物
+
+【输出要求】
+返回一个 JSON 对象：
+{
+    "all_correct": true/false,
+    "errors": [
+        {
+            "dialogue": "台词内容",
+            "claimed_speaker": "摘要中标注的说话者",
+            "actual_speaker": "原文中实际的说话者（如能确定）",
+            "reason": "错误原因说明"
+        }
+    ]
+}
+
+如果所有对话归属都正确，返回：{"all_correct": true, "errors": []}
+
+只返回 JSON，不要有其他内容。"""
+
+    def _extract_dialogues(self, text: str) -> List[Tuple[str, str]]:
+        """
+        从文本中提取对话和说话者
+        
+        Returns:
+            List of (speaker, dialogue) tuples
+        """
+        dialogues = []
+        
+        # 动作词列表（从长到短排序，避免短的先匹配）
+        action_words = (
+            "冷笑着说道|淡淡地说道|轻声说道|低声说道|大声说道|"
+            "冷笑道|笑道|喊道|叫道|问道|答道|说道|"
+            "冷笑着说|淡淡地说|轻声说|低声说|大声说|"
+            "喃喃道|大叫道|大叫|大声喊"
+            "冷冷道|淡淡道|轻轻道|"
+            "说|道|喊|叫|问|答"
+        )
+        
+        # 匹配模式：说话者 + 动作词 + 引号内容
+        # 支持中文引号 "" 和英文引号 ""
+        patterns = [
+            # 模式1: xxx说道："yyy"
+            rf'([^，。！？\s""\'：:]+?)(?:{action_words})[：:]\s*["""]([^"""]+)["""]',
+            # 模式2: "yyy"xxx说/道
+            r'["""]([^"""]+)["""]\s*([^，。！？\s""\']{1,8}?)(?:说道|说|道|喊道|叫道|大声|喃喃|低语)',
+        ]
+        
+        # 模式1
+        matches = re.findall(patterns[0], text)
+        for match in matches:
+            speaker, dialogue = match[0].strip(), match[1].strip()
+            if speaker and dialogue and len(dialogue) > 2:
+                # 清理说话者（移除可能的前缀）
+                speaker = re.sub(r'^[，。！？、\s]+', '', speaker)
+                # 提取最后一个有效的说话者（如 "他淡淡" -> "他"）
+                # 但保留完整人名
+                if len(speaker) > 2 and speaker not in ['他', '她', '我', '你']:
+                    # 检查是否以副词结尾
+                    speaker = re.sub(r'(淡淡|冷冷|轻轻|缓缓|悠悠)$', '', speaker)
+                if speaker:
+                    dialogues.append((speaker, dialogue))
+        
+        # 模式2的顺序是反的
+        matches = re.findall(patterns[1], text)
+        for match in matches:
+            dialogue, speaker = match[0].strip(), match[1].strip()
+            if speaker and dialogue and len(dialogue) > 2:
+                dialogues.append((speaker, dialogue))
+        
+        # 去重（基于对话内容）
+        seen_dialogues = set()
+        unique_dialogues = []
+        for speaker, dialogue in dialogues:
+            if dialogue not in seen_dialogues:
+                seen_dialogues.add(dialogue)
+                unique_dialogues.append((speaker, dialogue))
+        
+        return unique_dialogues
+    
+    def check(
+        self,
+        current_summary: str,
+        current_title: str,
+        original_text: str,
+        previous_summary: Optional[str] = None,
+        previous_title: Optional[str] = None
+    ) -> QualityCheckResult:
+        """检查摘要中的对话归属是否正确"""
+        
+        # 1. 提取摘要中的对话
+        dialogues = self._extract_dialogues(current_summary)
+        
+        # 如果没有对话，直接通过
+        if not dialogues:
+            return QualityCheckResult(passed=True, plugin_name=self.name)
+        
+        logger.info(f"      🔍 对话归属检查: 发现 {len(dialogues)} 句对话")
+        
+        # 2. 构建检查提示
+        dialogue_list = "\n".join([
+            f"- 说话者: {speaker}, 台词: \"{dialogue}\""
+            for speaker, dialogue in dialogues
+        ])
+        
+        prompt = f"""【原文内容】
+{original_text[:8000]}
+
+【摘要中的对话列表】
+{dialogue_list}
+
+请检查以上每句台词在原文中是否确实是标注的说话者所说。返回 JSON 格式的检查结果。"""
+
+        try:
+            response = call_llm(
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                max_tokens=1000,
+                system_message=self.SYSTEM_PROMPT
+            )
+            
+            # 解析 JSON 响应
+            result = response.strip()
+            
+            # 尝试提取 JSON
+            if "```json" in result:
+                result = result.split("```json")[1].split("```")[0].strip()
+            elif "```" in result:
+                result = result.split("```")[1].split("```")[0].strip()
+            
+            try:
+                data = json.loads(result)
+                
+                if data.get("all_correct", True):
+                    return QualityCheckResult(passed=True, plugin_name=self.name)
+                else:
+                    # 有错误的对话归属
+                    errors = data.get("errors", [])
+                    if not errors:
+                        return QualityCheckResult(passed=True, plugin_name=self.name)
+                    
+                    # 构建错误信息
+                    error_details = []
+                    for err in errors:
+                        dialogue = err.get("dialogue", "")
+                        claimed = err.get("claimed_speaker", "")
+                        actual = err.get("actual_speaker", "未知")
+                        reason = err.get("reason", "")
+                        error_details.append(
+                            f"台词「{dialogue[:20]}...」被标注为{claimed}所说，"
+                            f"但实际是{actual}说的。{reason}"
+                        )
+                    
+                    reason = "对话归属错误: " + "; ".join(error_details)
+                    
+                    # 构建增强提示词
+                    fix_hints = []
+                    for err in errors:
+                        dialogue = err.get("dialogue", "")
+                        actual = err.get("actual_speaker", "")
+                        if actual and actual != "未知":
+                            fix_hints.append(f"台词「{dialogue[:30]}」应该是{actual}说的，请修正")
+                    
+                    extra_prompt = f"""【对话归属修正要求】
+请注意以下对话的说话者需要修正：
+{chr(10).join(fix_hints) if fix_hints else reason}
+
+请确保摘要中每句对话都正确标注说话者。"""
+                    
+                    return QualityCheckResult(
+                        passed=False,
+                        plugin_name=self.name,
+                        reason=reason,
+                        retry_target="current",  # 重试当前章
+                        budget_multiplier=1.0,   # 不增加预算，只需修正归属
+                        extra_prompt=extra_prompt
+                    )
+                    
+            except json.JSONDecodeError:
+                logger.warning(f"      ⚠️ 对话归属检查 JSON 解析失败: {result}，默认通过")
+                return QualityCheckResult(passed=True, plugin_name=self.name)
+                
+        except Exception as e:
+            logger.warning(f"      ⚠️ 对话归属检查调用失败: {e}，默认通过")
             return QualityCheckResult(passed=True, plugin_name=self.name)
 
 

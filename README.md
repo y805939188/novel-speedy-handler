@@ -97,7 +97,7 @@ cp .env.example .env
 ```env
 LLM_API_URL=https://api.openai.com/v1/chat/completions
 LLM_API_KEY=your-api-key
-LLM_MODEL=gpt-4o-mini
+LLM_MODEL=your-model(我自己测试时使用的是 qwen 系列，不保证和其他系列模型输出格式的兼容，有必要的话可以自己改一改代码做适配)
 ```
 
 ### 3. 启动服务
@@ -111,13 +111,13 @@ cd client
 pnpm dev
 ```
 
-访问 http://localhost:5173 使用 Web 界面。
+访问 http://localhost:8888 使用 Web 界面。
 
 ## 📖 使用方法
 
 ### Web 界面使用
 
-1. 打开浏览器访问 http://localhost:5173
+1. 打开浏览器访问 http://localhost:8888
 2. 上传小说 TXT 文件（或粘贴文本）
 3. 设置目标阅读时间（如 30 分钟）
 4. 选择风格、输出模式等高级选项

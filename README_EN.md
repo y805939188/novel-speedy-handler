@@ -97,7 +97,7 @@ Edit the `.env` file:
 ```env
 LLM_API_URL=https://api.openai.com/v1/chat/completions
 LLM_API_KEY=your-api-key
-LLM_MODEL=gpt-4o-mini
+LLM_MODEL=your-model(I used the Qwen series for my own testing and cannot guarantee compatibility with the output formats of other series models. If necessary, you can modify the code yourself for adaptation)
 ```
 
 ### 3. Start Services
@@ -111,13 +111,13 @@ cd client
 pnpm dev
 ```
 
-Visit http://localhost:5173 to use the Web interface.
+Visit http://localhost:8888 to use the Web interface.
 
 ## 📖 Usage
 
 ### Web Interface
 
-1. Open browser and visit http://localhost:5173
+1. Open browser and visit http://localhost:8888
 2. Upload a novel TXT file (or paste text)
 3. Set target reading time (e.g., 30 minutes)
 4. Choose style, output mode, and other advanced options

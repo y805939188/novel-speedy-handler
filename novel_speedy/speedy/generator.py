@@ -39,6 +39,7 @@ from novel_speedy.speedy.quality_plugins import (
     QualityCheckResult,
     CompletenessPlugin,
     CoherencePlugin,
+    DialogueAttributionPlugin,
 )
 
 logger = logging.getLogger(__name__)
@@ -379,7 +380,8 @@ class SpeedyGenerator:
         if self.config.enable_quality_check:
             quality_checker = QualityChecker([
                 CompletenessPlugin(),
-                CoherencePlugin()
+                CoherencePlugin(),
+                DialogueAttributionPlugin()
             ])
         
         # 逐章压缩
@@ -564,6 +566,47 @@ class SpeedyGenerator:
                             previous_summary = sentences[-2] if len(sentences) > 1 else new_prev_compressed.content[:50]
                         else:
                             logger.warning(f"      ⚠️ 连贯性检查不通过，已达最大重试次数，保持当前结果")
+            
+            # 对话归属检查
+            if quality_checker:
+                for dialogue_attempt in range(max_retry + 1):
+                    dialogue_result = DialogueAttributionPlugin().check(
+                        current_summary=compressed.content,
+                        current_title=title,
+                        original_text=text
+                    )
+                    
+                    if dialogue_result.passed:
+                        if dialogue_attempt > 0:
+                            logger.info(f"      ✅ 对话归属检查通过（重试 {dialogue_attempt} 次）")
+                        else:
+                            logger.info(f"      ✅ 对话归属检查通过")
+                        break
+                    else:
+                        if dialogue_attempt < max_retry:
+                            logger.warning(
+                                f"      ⚠️ 对话归属检查不通过: {dialogue_result.reason[:100]}..."
+                            )
+                            logger.warning(
+                                f"      🔄 重新生成当前章修正对话归属 ({dialogue_attempt + 1}/{max_retry})"
+                            )
+                            
+                            # 添加对话归属修复的额外提示词
+                            context_with_fix = dict(context) if context else {}
+                            context_with_fix["extra_prompt"] = dialogue_result.extra_prompt
+                            
+                            # 重新压缩当前章（不增加预算，只修正归属）
+                            compressed = self.compressor.compress(
+                                chapter_text=text,
+                                chapter_title=title,
+                                chapter_index=index,
+                                target_chars=target_chars,
+                                climax_score=climax_score,
+                                coolpoint_types=coolpoint_types,
+                                context=context_with_fix
+                            )
+                        else:
+                            logger.warning(f"      ⚠️ 对话归属检查不通过，已达最大重试次数，使用当前结果")
             
             results.append(compressed)
             

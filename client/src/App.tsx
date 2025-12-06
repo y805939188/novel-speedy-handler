@@ -136,8 +136,8 @@ function App() {
       const data: AnalyzeResult = await res.json()
       setAnalyzeResult(data)
       
-      // 设置推荐的阅读时间为默认值
-      setTargetTime(data.recommended_reading_time)
+      // 设置推荐的阅读时间为默认值（乘以 1.1 倍并向上取整，增加冗余）
+      setTargetTime(Math.ceil(data.recommended_reading_time * 1.1))
       
       // 设置初始推荐值
       setRecommendation({
@@ -176,8 +176,8 @@ function App() {
       if (res.ok) {
         const data: Recommendation = await res.json()
         setRecommendation(data)
-        // 自动更新目标时间为推荐值
-        setTargetTime(data.recommended_reading_time)
+        // 自动更新目标时间为推荐值（乘以 1.1 倍并向上取整，增加冗余）
+        setTargetTime(Math.ceil(data.recommended_reading_time * 1.1))
       }
     } catch (e) {
       console.error('计算推荐值失败', e)
