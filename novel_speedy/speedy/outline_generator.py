@@ -362,15 +362,40 @@ class OutlineGenerator:
         )
         
         summaries = []
+        total = len(chapters)
         
-        for ch in chapters:
+        import time
+        processing_times = []
+        
+        for i, ch in enumerate(chapters):
+            start_time = time.time()
+            
             index = ch.get("index", 0)
             title = ch.get("title", f"第{index}章")
             text = ch.get("text", "")[:3000]  # 限制输入长度
             climax_score = climax_map.get(index, 0.5)
             
+            # 进度信息
+            progress_pct = (i / total) * 100
+            eta_str = ""
+            if processing_times:
+                avg_time = sum(processing_times) / len(processing_times)
+                remaining = total - i
+                eta_seconds = avg_time * remaining
+                eta_str = f" | ⏳ 剩余 {eta_seconds:.0f}s" if eta_seconds < 60 else f" | ⏳ 剩余 {eta_seconds/60:.1f}min"
+            
+            # 进度条
+            bar_width = 15
+            filled = int(bar_width * progress_pct / 100)
+            bar = "█" * filled + "░" * (bar_width - filled)
+            
+            logger.info(f"   [{bar}] {progress_pct:5.1f}% | 摘要 [{i+1}/{total}] {title[:12]:<12}{eta_str}")
+            
             # 生成摘要
             summary = self._generate_single_summary(title, text, chars_per_chapter)
+            
+            elapsed = time.time() - start_time
+            processing_times.append(elapsed)
             
             summaries.append(ChapterSummary(
                 chapter_index=index,
@@ -379,6 +404,9 @@ class OutlineGenerator:
                 climax_score=climax_score,
                 is_key_chapter=climax_score >= self.config.climax_threshold_must,
             ))
+        
+        if processing_times:
+            logger.info(f"   [{'█' * 15}] 100.0% | ✅ 摘要完成 | 共 {len(chapters)} 章 | 耗时 {sum(processing_times):.1f}s")
         
         return summaries
     
@@ -389,6 +417,8 @@ class OutlineGenerator:
         target_chars: int
     ) -> str:
         """生成单章摘要"""
+        
+        logger.info(f"      📝 调用 LLM API [摘要] | 输入 {len(text):,} 字 → 目标 {target_chars} 字")
         
         prompt = f"""用一句话（{target_chars}字以内）概括以下章节的核心情节：
 
@@ -418,10 +448,11 @@ class OutlineGenerator:
             if len(summary) > target_chars * 1.5:
                 summary = self._truncate_to_sentence(summary, int(target_chars * 1.2))
             
+            logger.info(f"      ✅ LLM 响应完成 | 实际输出 {len(summary)} 字")
             return summary
             
         except Exception as e:
-            logger.warning(f"生成摘要失败: {e}")
+            logger.warning(f"      ❌ 生成摘要失败: {e}")
             return f"{title}内容概述"
     
     def _generate_story_arcs(
@@ -442,9 +473,14 @@ class OutlineGenerator:
         # 每个弧的预算
         chars_per_arc = budget // num_arcs if num_arcs > 0 else budget
         
+        logger.info(f"   📖 生成故事弧: {num_arcs} 卷 | 每卷预算 {chars_per_arc} 字")
+        
         arcs = []
         
+        import time
+        
         for i in range(num_arcs):
+            start_time = time.time()
             start_idx = i * chapters_per_arc
             end_idx = start_idx + chapters_per_arc if i < num_arcs - 1 else len(chapters)
             
@@ -461,10 +497,17 @@ class OutlineGenerator:
                 if start_chapter <= cs.chapter_index <= end_chapter
             ]
             
+            # 进度日志
+            progress_pct = ((i + 1) / num_arcs) * 100
+            logger.info(f"      [{i+1}/{num_arcs}] 第{i+1}卷 (第{start_chapter}-{end_chapter}章)")
+            
             # 生成弧概述
             arc_summary = self._generate_arc_summary(
                 arc_chapters, arc_summaries, chars_per_arc, i + 1
             )
+            
+            elapsed = time.time() - start_time
+            logger.info(f"      ✅ 第{i+1}卷完成 | {len(arc_summary)} 字 | 耗时 {elapsed:.1f}s")
             
             arcs.append(StoryArc(
                 arc_index=i + 1,
@@ -505,6 +548,8 @@ class OutlineGenerator:
 
 【第{arc_index}卷概述】"""
         
+        logger.info(f"         📝 调用 LLM API [弧概述] | 目标 {target_chars} 字")
+        
         try:
             response = call_llm(
                 messages=[{"role": "user", "content": prompt}],
@@ -513,10 +558,12 @@ class OutlineGenerator:
                 system_message=ARC_SUMMARY_SYSTEM_PROMPT
             )
             
-            return self._truncate_to_sentence(response.strip(), target_chars)
+            result = self._truncate_to_sentence(response.strip(), target_chars)
+            logger.info(f"         ✅ LLM 响应完成 | 实际输出 {len(result)} 字")
+            return result
             
         except Exception as e:
-            logger.warning(f"生成弧概述失败: {e}")
+            logger.warning(f"         ❌ 生成弧概述失败: {e}")
             return f"第{arc_index}卷：第{chapters[0].get('index', 1)}章至第{chapters[-1].get('index', len(chapters))}章"
     
     def _generate_overview(
@@ -557,6 +604,9 @@ class OutlineGenerator:
 
 请生成一段引人入胜的故事概述："""
         
+        logger.info(f"   📝 生成全书概述...")
+        logger.info(f"      📝 调用 LLM API [全书概述] | 目标 {budget} 字")
+        
         try:
             response = call_llm(
                 messages=[{"role": "user", "content": prompt}],
@@ -565,10 +615,12 @@ class OutlineGenerator:
                 system_message=OVERVIEW_SYSTEM_PROMPT
             )
             
-            return self._truncate_to_sentence(response.strip(), budget)
+            result = self._truncate_to_sentence(response.strip(), budget)
+            logger.info(f"      ✅ LLM 响应完成 | 实际输出 {len(result)} 字")
+            return result
             
         except Exception as e:
-            logger.warning(f"生成概述失败: {e}")
+            logger.warning(f"      ❌ 生成概述失败: {e}")
             return f"本书共{len(chapters)}章，讲述了一个精彩的故事。"
 
 

@@ -6,8 +6,13 @@ requests>=2.28.0
 # 环境变量管理
 python-dotenv>=1.0.0
 
-# 后续可能用到的依赖（暂时注释）
-# pydantic>=2.0.0      # 数据验证
-# aiohttp>=3.8.0       # 异步请求（并发支持）
-# tqdm>=4.65.0         # 进度条
-# rich>=13.0.0         # 美化输出
+# FastAPI 相关
+fastapi>=0.104.0
+uvicorn>=0.24.0
+python-multipart>=0.0.6  # 文件上传支持
+
+# 数据验证
+pydantic>=2.0.0
+
+# 美化输出
+rich>=13.0.0

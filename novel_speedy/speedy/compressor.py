@@ -48,6 +48,10 @@ class CompressionConfig:
     summarize_include_names: bool = True      # 包含人物名字
     summarize_include_events: bool = True     # 包含关键事件
     
+    # 质量自检配置
+    enable_quality_check: bool = True         # 是否启用质量自检
+    quality_check_max_retry: int = 3          # 质检不通过时最大重试次数
+    
     def to_dict(self) -> Dict[str, Any]:
         return {
             "preserve_threshold": self.preserve_threshold,
@@ -86,11 +90,28 @@ REWRITE_SYSTEM_PROMPT = """你是一名专业的小说内容压缩专家。你�
 
 【压缩原则】
 1. 保留核心情节和关键转折
-2. 保留重要对话（可精简）
-3. 保留人物关键动作
-4. 删除环境描写细节
-5. 删除冗长心理描写
-6. 删除过渡性叙述
+2. 保留人物关键动作
+3. 删除环境描写细节
+4. 删除冗长心理描写
+5. 删除过渡性叙述
+
+【关键对话保留】
+可以适当保留原文中的经典对话，但要精选，只保留以下类型：
+- 影响剧情走向的对话或主角说的话（如重要决定、关键信息透露）
+- 带有"爽点"的对话或主角说的话（如打脸、装逼、逆袭时的台词）
+- 体现人物性格的精彩台词
+- 有意思或令人印象深刻的金句
+举例：
+  1. 主角对人放狠话、警告、威胁
+  2. 敌人立下必死的 flag（如"你不可能赢我"）
+  3. 打脸时刻的经典台词（如"刚才你说什么？再说一遍？"）
+  4. 逆袭翻盘时主角的宣言
+  5. 装逼名场面的台词（如报出身份、展示实力）
+  6. 重要人物的关键承诺或誓言
+  7. 揭示真相或反转时的对话
+  8. 敌人震惊、不敢置信时说的话
+类似以上的内容都可以把对话或者台词内容保留下来。这种台词内容可以不计入在字数预算内。
+注意：不要保留太多对话，只选最精彩的1-3句即可。
 
 【输出要求】
 1. 直接输出压缩后的内容
@@ -107,6 +128,60 @@ SUMMARIZE_SYSTEM_PROMPT = """你是一名专业的小说摘要生成器。你的
 3. 必须包含关键事件
 4. 语言简洁有力
 
+【重要：保留精彩台词】
+你必须有大概率在摘要中穿插1-2句原文中的精彩对话（用引号标注），并且自然地融入到摘要中，这样可以让读者感受到原文的氛围。
+
+优先保留这些类型的台词：
+
+【爽点类】
+- 主角放狠话、警告、威胁（如"今天，你必须死！"）
+- 打脸名场面（如"刚才谁说我是废物？站出来！"）
+- 逆袭翻盘时的霸气宣言（如"从今天起，规则由我来定！"）
+- 装逼亮身份（如"在座的各位，都是垃圾。"）
+- 敌人立必死 flag（如"你不可能赢我！"、"我倒要看看你有什么本事"）
+- 敌人震惊崩溃（如"这不可能！"、"你怎么可能还活着？"）
+
+【情感类】
+- 热血誓言（如"我一定会变强，保护你们所有人！"）
+- 年少轻狂的豪言（如"这天，也遮不住我的光芒！"）
+- 深情告白或承诺（如"此生，唯你不负。"）
+- 生离死别的遗言（如"替我...照顾好她..."）
+- 兄弟情义（如"你的仇，就是我的仇！"）
+
+【剧情类】
+- 揭示真相或身份（如"其实，我就是你要找的人。"）
+- 重要决定或转折（如"从今天起，我退出家族。"）
+- 关键信息透露（如"那个秘密，只有我知道。"）
+- 伏笔或悬念（如"等你到了那个境界，自然会明白。"）
+
+【氛围类】
+- 众所周知的经典台词
+- 能引起读者共鸣的金句
+- 体现人物性格的标志性口头禅
+
+格式示例（展示如何自然融入台词）：
+
+1. 打脸爽点：
+"众人嘲笑他是废物，他冷笑一声：'三十年河东，三十年河西。'话音未落，一掌击碎对手护体真气。"
+
+2. 敌人立 flag：
+"敌人狂笑道：'就凭你也想伤我？'下一秒，一道剑光划过，敌人瞪大双眼倒地。"
+
+3. 情感告别：
+"她转身离去，只留下一句：'来世，再不相欠。'他望着背影，久久无言。"
+
+4. 揭示身份：
+"老者摘下斗笠，众人倒吸一口凉气。'没想到吧，'他淡淡道，'我就是当年的剑圣。'"
+
+5. 热血誓言：
+"少年握紧双拳，望着远方发誓：'总有一天，我会站在这片大陆的巅峰！'"
+
+6. 震惊反转：
+"'这不可能！'敌人惊恐后退，'你明明已经死了！'主角从阴影中走出，嘴角含笑。"
+
+以上内容是示例，不要照搬，要根据实际情况灵活使用。
+注意：台词不计入字数限制，可以额外添加。
+
 【输出要求】
 1. 直接输出摘要内容
 2. 不要添加任何说明或标注
@@ -116,17 +191,46 @@ SUMMARIZE_SYSTEM_PROMPT = """你是一名专业的小说摘要生成器。你的
 PRESERVE_SYSTEM_PROMPT = """你是一名专业的小说编辑。你的任务是精简章节内容，删除冗余部分，保留精华。
 
 【精简原则】
-1. 保留所有对话
-2. 保留动作场景
-3. 保留情节转折
-4. 删除环境描写
-5. 删除心理铺垫
-6. 简化过渡段落
+1. 保留动作场景
+2. 保留情节转折
+3. 删除环境描写
+4. 删除心理铺垫
+5. 简化过渡段落
+
+【关键对话保留】
+精选保留原文中的精彩对话，只保留以下类型：
+- 影响剧情走向的对话（如重要决定、关键信息）
+- 带有"爽点"的对话（如打脸、装逼、逆袭、翻盘时的台词）
+- 体现人物性格的精彩台词
+- 有意思或令人印象深刻的金句
+注意：对话不要全部保留，只选最精彩的部分，普通的闲聊或过渡对话可以删除。
 
 【输出要求】
 1. 直接输出精简后的内容
 2. 保持原文风格
 3. 确保句子完整"""
+
+
+QUALITY_CHECK_SYSTEM_PROMPT = """你是一名专业的小说摘要质量检查员。你的任务是判断给定的章节摘要是否完整。
+
+【检查要点】
+1. 句子是否完整（没有截断、没有说到一半）
+2. 对话引用是否完整（引号是否成对、台词是否说完）
+3. 内容是否有头有尾（不是突然开始或突然结束）
+4. 人物名字是否清晰（不会让人混淆）
+
+【不完整的典型例子】
+- 句子被截断："萧炎说道："我一定会"（台词没说完）
+- 引号不成对："他冷笑道：'你以为你赢了？（缺少结束引号）
+- 内容突然结束："众人震惊，这时"（没有下文）
+- 人物不明："他说道..."（不知道是谁）
+
+【输出要求】
+你必须只回复一个数字：
+- 回复 1 表示摘要完整，可以使用
+- 回复 0 表示摘要不完整，需要重新生成
+
+不要回复任何其他内容，只回复 0 或 1。"""
 
 
 class ChapterCompressor:
@@ -178,31 +282,73 @@ class ChapterCompressor:
         # 选择压缩策略
         strategy = self._select_strategy(compression_ratio, climax_score)
         
+        # 策略图标
+        strategy_icons = {
+            CompressionStrategy.PRESERVE: "📝",
+            CompressionStrategy.REWRITE: "✏️",
+            CompressionStrategy.SUMMARIZE: "📋",
+        }
+        strategy_icon = strategy_icons.get(strategy, "📄")
+        
         logger.info(
-            f"[压缩] 章节 {chapter_index}: {original_chars} → {target_chars} 字, "
-            f"压缩比 {compression_ratio:.1%}, 策略: {strategy.value}"
+            f"      {strategy_icon} 调用 LLM API [{strategy.value}] | "
+            f"输入 {original_chars:,} 字 → 目标 {target_chars:,} 字"
         )
         
-        # 执行压缩
-        if strategy == CompressionStrategy.PRESERVE:
-            content = self._compress_preserve(
-                chapter_text, chapter_title, target_chars, climax_score, 
-                self.style, context, self.continuous_mode
-            )
-        elif strategy == CompressionStrategy.REWRITE:
-            content = self._compress_rewrite(
-                chapter_text, chapter_title, target_chars, 
-                climax_score, coolpoint_types, context, self.style, self.continuous_mode
-            )
-        else:
-            content = self._compress_summarize(
-                chapter_text, chapter_title, target_chars,
-                climax_score, coolpoint_types, self.style, context, self.continuous_mode
-            )
+        # 执行压缩（带质检重试）
+        max_attempts = self.config.quality_check_max_retry + 1 if self.config.enable_quality_check else 1
+        content = None
+        current_target_chars = target_chars  # 当前目标字数，质检失败时会增加
         
-        # 构建结果
-        compressed_chars = len(content)
-        actual_ratio = compressed_chars / original_chars if original_chars > 0 else 1.0
+        for attempt in range(max_attempts):
+            # 执行压缩
+            if strategy == CompressionStrategy.PRESERVE:
+                content = self._compress_preserve(
+                    chapter_text, chapter_title, current_target_chars, climax_score, 
+                    self.style, context, self.continuous_mode
+                )
+            elif strategy == CompressionStrategy.REWRITE:
+                content = self._compress_rewrite(
+                    chapter_text, chapter_title, current_target_chars, 
+                    climax_score, coolpoint_types, context, self.style, self.continuous_mode
+                )
+            else:
+                content = self._compress_summarize(
+                    chapter_text, chapter_title, current_target_chars,
+                    climax_score, coolpoint_types, self.style, context, self.continuous_mode
+                )
+            
+            compressed_chars = len(content)
+            actual_ratio = compressed_chars / original_chars if original_chars > 0 else 1.0
+            
+            logger.info(
+                f"      ✅ LLM 响应完成 | 实际输出 {compressed_chars:,} 字 ({actual_ratio:.1%})"
+            )
+            
+            # 质量自检
+            if self.config.enable_quality_check:
+                is_complete = self._quality_check(chapter_text, content, chapter_title)
+                if is_complete:
+                    if attempt > 0:
+                        extra_budget = current_target_chars - target_chars
+                        logger.info(f"      ✅ 质检通过（重试 {attempt} 次，额外预算 +{extra_budget} 字）")
+                    else:
+                        logger.info(f"      ✅ 质检通过")
+                    break
+                else:
+                    if attempt < max_attempts - 1:
+                        # 质检不通过，增加 10% 的字数预算
+                        old_target = current_target_chars
+                        current_target_chars = int(current_target_chars * 1.1)
+                        logger.warning(
+                            f"      ⚠️ 质检不通过，增加预算重试... "
+                            f"({attempt + 1}/{self.config.quality_check_max_retry}) "
+                            f"[{old_target}→{current_target_chars} 字]"
+                        )
+                    else:
+                        logger.warning(f"      ⚠️ 质检不通过，已达最大重试次数，使用当前结果")
+            else:
+                break  # 不启用质检，直接退出循环
         
         return CompressedChapter(
             chapter_index=chapter_index,
@@ -213,6 +359,56 @@ class ChapterCompressor:
             strategy_used=strategy.value,
             content=content,
         )
+    
+    def _quality_check(
+        self,
+        original_text: str,
+        summary: str,
+        chapter_title: str
+    ) -> bool:
+        """
+        质量自检：检查摘要是否完整
+        
+        Args:
+            original_text: 原文
+            summary: 生成的摘要
+            chapter_title: 章节标题
+        
+        Returns:
+            bool: True 表示完整，False 表示不完整
+        """
+        # 构建检查提示
+        prompt = f"""【章节标题】{chapter_title}
+
+【原文摘要】（请检查以下摘要是否完整）
+{summary}
+
+请判断这个摘要是否完整，只回复 0 或 1："""
+
+        try:
+            response = call_llm(
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,  # 低温度，确保输出稳定
+                max_tokens=5,     # 只需要一个数字
+                system_message=QUALITY_CHECK_SYSTEM_PROMPT
+            )
+            
+            # 解析响应
+            result = response.strip()
+            
+            # 提取数字
+            if '1' in result:
+                return True
+            elif '0' in result:
+                return False
+            else:
+                # 无法解析，默认通过
+                logger.warning(f"      ⚠️ 质检响应无法解析: {result}，默认通过")
+                return True
+                
+        except Exception as e:
+            logger.warning(f"      ⚠️ 质检调用失败: {e}，默认通过")
+            return True
     
     def _select_strategy(
         self,

@@ -313,18 +313,43 @@ class SpeedyBudgetCalculator:
         """
         计算重要性权重
         
+        当有高潮评分时：
         公式: weight = base_weight + climax_score * multiplier
         
         这样：
         - climax_score = 0 时，weight = base_weight = 0.3
         - climax_score = 1 时，weight = 0.3 + 1.5 = 1.8
         - 高潮章节相对于低谷章节，权重比为 1.8 : 0.3 = 6 : 1
+        
+        当没有高潮评分时（所有 climax_score 都是 0.5）：
+        根据章节原文长度按比例分配权重，让长章节获得更多预算
         """
-        for ch in chapters:
-            ch.importance_weight = (
-                self.config.base_weight + 
-                ch.climax_score * self.config.climax_weight_multiplier
-            )
+        # 检测是否所有 climax_score 都相同（没有真实的高潮评分）
+        scores = set(ch.climax_score for ch in chapters)
+        has_real_climax_scores = len(scores) > 1
+        
+        if has_real_climax_scores:
+            # 有真实高潮评分，使用高潮分数计算权重
+            for ch in chapters:
+                ch.importance_weight = (
+                    self.config.base_weight + 
+                    ch.climax_score * self.config.climax_weight_multiplier
+                )
+            logger.info("预算分配策略: 基于高潮评分")
+        else:
+            # 没有高潮评分，根据原文长度按比例分配
+            total_chars = sum(ch.original_chars for ch in chapters)
+            if total_chars > 0:
+                for ch in chapters:
+                    # 混合权重：50% 基于原文长度 + 50% 均匀分配
+                    length_weight = ch.original_chars / total_chars
+                    uniform_weight = 1.0 / len(chapters)
+                    ch.importance_weight = 0.5 * length_weight + 0.5 * uniform_weight
+                logger.info("预算分配策略: 基于章节长度（混合均匀分配）")
+            else:
+                for ch in chapters:
+                    ch.importance_weight = 1.0 / len(chapters)
+                logger.info("预算分配策略: 均匀分配")
     
     def _normalize_weights(
         self,

@@ -78,6 +78,9 @@ class SpeedyConfig:
     start_chapter: int = 1                 # 起始章节
     end_chapter: Optional[int] = None      # 结束章节（None 表示全部）
     
+    # 质量自检
+    enable_quality_check: bool = True      # 是否启用质量自检（默认开启）
+    
     @property
     def style_description(self) -> Optional[str]:
         """获取风格描述"""
@@ -242,8 +245,12 @@ class SpeedyGenerator:
             outline_budget_ratio=self.config.outline_budget_ratio,
         ))
         
+        # 构建压缩配置，注入 enable_quality_check
+        compression_config = self.config.compression_config or CompressionConfig()
+        compression_config.enable_quality_check = self.config.enable_quality_check
+        
         self.compressor = ChapterCompressor(
-            config=self.config.compression_config or CompressionConfig(),
+            config=compression_config,
             style=self.config.style_description,  # 传递风格描述
             continuous_mode=(self.config.output_mode == "continuous")  # 整体连贯模式
         )
@@ -393,19 +400,33 @@ class SpeedyGenerator:
             # 进度信息
             progress_pct = (i / total_chapters) * 100
             eta_str = ""
+            eta_detail = ""
             if processing_times:
                 avg_time = sum(processing_times) / len(processing_times)
                 remaining = total_chapters - i
                 eta_seconds = avg_time * remaining
                 if eta_seconds >= 60:
-                    eta_str = f", 预计剩余 {eta_seconds/60:.1f} 分钟"
+                    eta_str = f"⏳ 预计剩余 {eta_seconds/60:.1f} 分钟"
                 else:
-                    eta_str = f", 预计剩余 {eta_seconds:.0f} 秒"
+                    eta_str = f"⏳ 预计剩余 {eta_seconds:.0f} 秒"
+                eta_detail = f" | 平均 {avg_time:.1f}s/章"
+            
+            # 构建进度条
+            bar_width = 20
+            filled = int(bar_width * progress_pct / 100)
+            bar = "█" * filled + "░" * (bar_width - filled)
+            
+            # 压缩比预览
+            compress_ratio = target_chars / len(text) * 100 if len(text) > 0 else 100
             
             logger.info(
-                f"[{i+1}/{total_chapters}] ({progress_pct:.0f}%) 压缩: {title[:20]}"
-                f" ({len(text)}→{target_chars}字){eta_str}"
+                f"   [{bar}] {progress_pct:5.1f}% | "
+                f"[{i+1}/{total_chapters}] {title[:15]:<15} | "
+                f"{len(text):,}→{target_chars:,}字 ({compress_ratio:.0f}%)"
+                f"{eta_detail}"
             )
+            if eta_str:
+                logger.info(f"   {eta_str}")
             
             # 压缩
             compressed = self.compressor.compress(
@@ -432,9 +453,10 @@ class SpeedyGenerator:
         # 输出总耗时
         total_time = sum(processing_times)
         avg_time = total_time / len(processing_times) if processing_times else 0
+        logger.info(f"   [{'█' * 20}] 100.0% | ✅ 全部完成!")
         logger.info(
-            f"压缩完成: {total_chapters} 章, 总耗时 {total_time:.1f}秒, "
-            f"平均 {avg_time:.2f}秒/章"
+            f"   📊 压缩汇总: {total_chapters} 章 | "
+            f"总耗时 {total_time:.1f}s | 平均 {avg_time:.2f}s/章"
         )
         
         return results
@@ -448,7 +470,8 @@ def generate_speedy(
     reading_speed: int = 300,
     output_format: str = "markdown",
     output_mode: str = "chapter",
-    style: Optional[str] = None
+    style: Optional[str] = None,
+    enable_quality_check: bool = True
 ) -> SpeedyResult:
     """
     便捷函数：生成速读版
@@ -466,6 +489,7 @@ def generate_speedy(
         style: 输出风格（预设名称或自定义描述）
                预设: pingshu(评书), ancient(古文), humor(幽默), 
                      dramatic(戏剧化), minimalist(极简), storytelling(讲故事)
+        enable_quality_check: 是否启用质量自检（默认开启）
     
     Returns:
         SpeedyResult: 速读生成结果
@@ -476,6 +500,7 @@ def generate_speedy(
         output_format=output_format,
         output_mode=output_mode,
         style=style,
+        enable_quality_check=enable_quality_check,
     )
     
     generator = SpeedyGenerator(config)
