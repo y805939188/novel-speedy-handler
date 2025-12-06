@@ -211,28 +211,6 @@ PRESERVE_SYSTEM_PROMPT = """你是一名专业的小说编辑。你的任务是�
 3. 确保句子完整"""
 
 
-QUALITY_CHECK_SYSTEM_PROMPT = """你是一名专业的小说摘要质量检查员。你的任务是判断给定的章节摘要是否完整。
-
-【检查要点】
-1. 句子是否完整（没有截断、没有说到一半）
-2. 对话引用是否完整（引号是否成对、台词是否说完）
-3. 内容是否有头有尾（不是突然开始或突然结束）
-4. 人物名字是否清晰（不会让人混淆）
-
-【不完整的典型例子】
-- 句子被截断："萧炎说道："我一定会"（台词没说完）
-- 引号不成对："他冷笑道：'你以为你赢了？（缺少结束引号）
-- 内容突然结束："众人震惊，这时"（没有下文）
-- 人物不明："他说道..."（不知道是谁）
-
-【输出要求】
-你必须只回复一个数字：
-- 回复 1 表示摘要完整，可以使用
-- 回复 0 表示摘要不完整，需要重新生成
-
-不要回复任何其他内容，只回复 0 或 1。"""
-
-
 class ChapterCompressor:
     """章节压缩器"""
     
@@ -267,6 +245,7 @@ class ChapterCompressor:
             climax_score: 高潮评分（用于判断重要性）
             coolpoint_types: 爽点类型列表
             context: 上下文信息（如前一章摘要）
+            extra_prompt: 额外提示词（用于连贯性修复等）
         
         Returns:
             CompressedChapter: 压缩后的章节
@@ -295,60 +274,32 @@ class ChapterCompressor:
             f"输入 {original_chars:,} 字 → 目标 {target_chars:,} 字"
         )
         
-        # 执行压缩（带质检重试）
-        max_attempts = self.config.quality_check_max_retry + 1 if self.config.enable_quality_check else 1
-        content = None
-        current_target_chars = target_chars  # 当前目标字数，质检失败时会增加
+        # 从 context 中提取额外提示词
+        extra_prompt = context.get("extra_prompt") if context else None
         
-        for attempt in range(max_attempts):
-            # 执行压缩
-            if strategy == CompressionStrategy.PRESERVE:
-                content = self._compress_preserve(
-                    chapter_text, chapter_title, current_target_chars, climax_score, 
-                    self.style, context, self.continuous_mode
-                )
-            elif strategy == CompressionStrategy.REWRITE:
-                content = self._compress_rewrite(
-                    chapter_text, chapter_title, current_target_chars, 
-                    climax_score, coolpoint_types, context, self.style, self.continuous_mode
-                )
-            else:
-                content = self._compress_summarize(
-                    chapter_text, chapter_title, current_target_chars,
-                    climax_score, coolpoint_types, self.style, context, self.continuous_mode
-                )
-            
-            compressed_chars = len(content)
-            actual_ratio = compressed_chars / original_chars if original_chars > 0 else 1.0
-            
-            logger.info(
-                f"      ✅ LLM 响应完成 | 实际输出 {compressed_chars:,} 字 ({actual_ratio:.1%})"
+        # 执行压缩
+        if strategy == CompressionStrategy.PRESERVE:
+            content = self._compress_preserve(
+                chapter_text, chapter_title, target_chars, climax_score, 
+                self.style, context, self.continuous_mode, extra_prompt
             )
-            
-            # 质量自检
-            if self.config.enable_quality_check:
-                is_complete = self._quality_check(chapter_text, content, chapter_title)
-                if is_complete:
-                    if attempt > 0:
-                        extra_budget = current_target_chars - target_chars
-                        logger.info(f"      ✅ 质检通过（重试 {attempt} 次，额外预算 +{extra_budget} 字）")
-                    else:
-                        logger.info(f"      ✅ 质检通过")
-                    break
-                else:
-                    if attempt < max_attempts - 1:
-                        # 质检不通过，增加 10% 的字数预算
-                        old_target = current_target_chars
-                        current_target_chars = int(current_target_chars * 1.1)
-                        logger.warning(
-                            f"      ⚠️ 质检不通过，增加预算重试... "
-                            f"({attempt + 1}/{self.config.quality_check_max_retry}) "
-                            f"[{old_target}→{current_target_chars} 字]"
-                        )
-                    else:
-                        logger.warning(f"      ⚠️ 质检不通过，已达最大重试次数，使用当前结果")
-            else:
-                break  # 不启用质检，直接退出循环
+        elif strategy == CompressionStrategy.REWRITE:
+            content = self._compress_rewrite(
+                chapter_text, chapter_title, target_chars, 
+                climax_score, coolpoint_types, context, self.style, self.continuous_mode, extra_prompt
+            )
+        else:
+            content = self._compress_summarize(
+                chapter_text, chapter_title, target_chars,
+                climax_score, coolpoint_types, self.style, context, self.continuous_mode, extra_prompt
+            )
+        
+        compressed_chars = len(content)
+        actual_ratio = compressed_chars / original_chars if original_chars > 0 else 1.0
+        
+        logger.info(
+            f"      ✅ LLM 响应完成 | 实际输出 {compressed_chars:,} 字 ({actual_ratio:.1%})"
+        )
         
         return CompressedChapter(
             chapter_index=chapter_index,
@@ -359,56 +310,6 @@ class ChapterCompressor:
             strategy_used=strategy.value,
             content=content,
         )
-    
-    def _quality_check(
-        self,
-        original_text: str,
-        summary: str,
-        chapter_title: str
-    ) -> bool:
-        """
-        质量自检：检查摘要是否完整
-        
-        Args:
-            original_text: 原文
-            summary: 生成的摘要
-            chapter_title: 章节标题
-        
-        Returns:
-            bool: True 表示完整，False 表示不完整
-        """
-        # 构建检查提示
-        prompt = f"""【章节标题】{chapter_title}
-
-【原文摘要】（请检查以下摘要是否完整）
-{summary}
-
-请判断这个摘要是否完整，只回复 0 或 1："""
-
-        try:
-            response = call_llm(
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,  # 低温度，确保输出稳定
-                max_tokens=5,     # 只需要一个数字
-                system_message=QUALITY_CHECK_SYSTEM_PROMPT
-            )
-            
-            # 解析响应
-            result = response.strip()
-            
-            # 提取数字
-            if '1' in result:
-                return True
-            elif '0' in result:
-                return False
-            else:
-                # 无法解析，默认通过
-                logger.warning(f"      ⚠️ 质检响应无法解析: {result}，默认通过")
-                return True
-                
-        except Exception as e:
-            logger.warning(f"      ⚠️ 质检调用失败: {e}，默认通过")
-            return True
     
     def _select_strategy(
         self,
@@ -443,7 +344,8 @@ class ChapterCompressor:
         climax_score: float,
         style: Optional[str] = None,
         context: Optional[Dict[str, Any]] = None,
-        continuous_mode: bool = False
+        continuous_mode: bool = False,
+        extra_prompt: Optional[str] = None
     ) -> str:
         """保留式压缩：保留关键段落，删除冗余"""
         
@@ -466,13 +368,18 @@ class ChapterCompressor:
 - 根据内容自行判断最自然的衔接方式
 """
         
+        # 额外提示词（用于连贯性修复等）
+        extra_instruction = ""
+        if extra_prompt:
+            extra_instruction = f"\n{extra_prompt}\n"
+        
         prompt = f"""【任务】精简以下章节内容到约 {target_chars} 字
 
 【章节标题】{chapter_title}
 
 【原文】
 {chapter_text[:self.config.rewrite_max_input_chars]}
-{style_instruction}{continuity_instruction}
+{style_instruction}{continuity_instruction}{extra_instruction}
 【目标字数】约 {target_chars} 字
 
 请直接输出精简后的内容："""
@@ -498,7 +405,8 @@ class ChapterCompressor:
         coolpoint_types: Optional[List[str]] = None,
         context: Optional[Dict[str, Any]] = None,
         style: Optional[str] = None,
-        continuous_mode: bool = False
+        continuous_mode: bool = False,
+        extra_prompt: Optional[str] = None
     ) -> str:
         """重写式压缩：提取核心情节，LLM 重写"""
         
@@ -530,6 +438,11 @@ class ChapterCompressor:
         if style:
             style_instruction = f"\n【风格要求】请使用以下风格进行重写：{style}\n"
         
+        # 额外提示词（用于连贯性修复等）
+        extra_instruction = ""
+        if extra_prompt:
+            extra_instruction = f"\n{extra_prompt}\n"
+        
         prompt = f"""【任务】将以下章节重写压缩到约 {target_chars} 字
 {context_text}
 【章节标题】{chapter_title}
@@ -539,7 +452,7 @@ class ChapterCompressor:
 
 【重要提示】
 {preserve_text}
-{style_instruction}
+{style_instruction}{extra_instruction}
 【目标字数】约 {target_chars} 字
 
 请直接输出重写后的内容："""
@@ -556,7 +469,7 @@ class ChapterCompressor:
             logger.warning(f"重写式压缩失败: {e}")
             return self._compress_summarize(
                 chapter_text, chapter_title, target_chars, climax_score, 
-                coolpoint_types, style, context, continuous_mode
+                coolpoint_types, style, context, continuous_mode, extra_prompt
             )
     
     def _compress_summarize(
@@ -568,7 +481,8 @@ class ChapterCompressor:
         coolpoint_types: Optional[List[str]] = None,
         style: Optional[str] = None,
         context: Optional[Dict[str, Any]] = None,
-        continuous_mode: bool = False
+        continuous_mode: bool = False,
+        extra_prompt: Optional[str] = None
     ) -> str:
         """摘要式压缩：纯 LLM 生成剧情摘要"""
         
@@ -594,13 +508,18 @@ class ChapterCompressor:
 - 避免重复使用同一个过渡词，要多样化
 """
         
+        # 额外提示词（用于连贯性修复等）
+        extra_instruction = ""
+        if extra_prompt:
+            extra_instruction = f"\n{extra_prompt}\n"
+        
         prompt = f"""【任务】用约 {target_chars} 字概括以下章节的核心剧情
 
 【章节标题】{chapter_title}
 【原文】
 {chapter_text[:self.config.rewrite_max_input_chars]}
 {coolpoint_hint}
-{style_instruction}{continuity_instruction}
+{style_instruction}{continuity_instruction}{extra_instruction}
 【目标字数】约 {target_chars} 字
 
 请直接输出摘要："""

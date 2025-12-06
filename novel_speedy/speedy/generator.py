@@ -34,6 +34,12 @@ from novel_speedy.speedy.compressor import (
     ChapterCompressor,
     CompressedChapter,
 )
+from novel_speedy.speedy.quality_plugins import (
+    QualityChecker,
+    QualityCheckResult,
+    CompletenessPlugin,
+    CoherencePlugin,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -351,7 +357,7 @@ class SpeedyGenerator:
         budget_plan: SpeedyBudgetPlan,
         climax_scores: Optional[List[Dict[str, Any]]] = None
     ) -> List[CompressedChapter]:
-        """逐章压缩"""
+        """逐章压缩（带插件质检）"""
         
         # 构建映射
         budget_map = {cb.chapter_index: cb for cb in budget_plan.chapters}
@@ -368,14 +374,27 @@ class SpeedyGenerator:
                         details = ds.get("details", {})
                         coolpoint_map[idx] = details.get("coolpoint_types", [])
         
+        # 初始化质检器（如果启用质检）
+        quality_checker = None
+        if self.config.enable_quality_check:
+            quality_checker = QualityChecker([
+                CompletenessPlugin(),
+                CoherencePlugin()
+            ])
+        
         # 逐章压缩
         results = []
         previous_summary = None
+        previous_title = None
+        
+        # 保存章节原始数据，用于可能的重新生成
+        chapter_data_map = {}
         
         # 进度追踪
         import time
         total_chapters = len(chapters)
-        processing_times = []  # 记录每章处理时间
+        processing_times = []
+        max_retry = 3  # 质检最大重试次数
         
         for i, ch in enumerate(chapters):
             start_time = time.time()
@@ -384,9 +403,18 @@ class SpeedyGenerator:
             title = ch.get("title", f"第{index}章")
             text = ch.get("text", "")
             
+            # 保存章节数据
+            chapter_data_map[index] = {
+                "text": text,
+                "title": title,
+                "climax_score": climax_map.get(index, 0.5),
+                "coolpoint_types": coolpoint_map.get(index, [])
+            }
+            
             # 获取预算
             budget_result = budget_map.get(index)
             target_chars = budget_result.budget_chars if budget_result else int(len(text) * 0.1)
+            original_target_chars = target_chars  # 保存原始预算
             
             # 获取高潮信息
             climax_score = climax_map.get(index, 0.5)
@@ -428,16 +456,114 @@ class SpeedyGenerator:
             if eta_str:
                 logger.info(f"   {eta_str}")
             
-            # 压缩
-            compressed = self.compressor.compress(
-                chapter_text=text,
-                chapter_title=title,
-                chapter_index=index,
-                target_chars=target_chars,
-                climax_score=climax_score,
-                coolpoint_types=coolpoint_types,
-                context=context
-            )
+            # 压缩当前章节（带完整性检查重试）
+            compressed = None
+            for attempt in range(max_retry + 1):
+                compressed = self.compressor.compress(
+                    chapter_text=text,
+                    chapter_title=title,
+                    chapter_index=index,
+                    target_chars=target_chars,
+                    climax_score=climax_score,
+                    coolpoint_types=coolpoint_types,
+                    context=context
+                )
+                
+                # 如果不启用质检，直接跳出
+                if not quality_checker:
+                    break
+                
+                # 完整性检查
+                completeness_result = CompletenessPlugin().check(
+                    current_summary=compressed.content,
+                    current_title=title,
+                    original_text=text
+                )
+                
+                if completeness_result.passed:
+                    if attempt > 0:
+                        extra_budget = target_chars - original_target_chars
+                        logger.info(f"      ✅ 完整性检查通过（重试 {attempt} 次，额外预算 +{extra_budget} 字）")
+                    else:
+                        logger.info(f"      ✅ 完整性检查通过")
+                    break
+                else:
+                    if attempt < max_retry:
+                        old_target = target_chars
+                        target_chars = int(target_chars * 1.1)  # 增加 10% 预算
+                        logger.warning(
+                            f"      ⚠️ 完整性检查不通过，增加预算重试... "
+                            f"({attempt + 1}/{max_retry}) [{old_target}→{target_chars} 字]"
+                        )
+                    else:
+                        logger.warning(f"      ⚠️ 完整性检查不通过，已达最大重试次数，使用当前结果")
+            
+            # 连贯性检查（需要有上一章）
+            if quality_checker and results and previous_summary:
+                prev_compressed = results[-1]
+                prev_index = prev_compressed.chapter_index
+                prev_data = chapter_data_map.get(prev_index, {})
+                prev_target_chars = prev_compressed.compressed_chars
+                
+                for coherence_attempt in range(max_retry + 1):
+                    coherence_result = CoherencePlugin().check(
+                        current_summary=compressed.content,
+                        current_title=title,
+                        original_text=text,
+                        previous_summary=prev_compressed.content,
+                        previous_title=prev_compressed.chapter_title
+                    )
+                    
+                    if coherence_result.passed:
+                        if coherence_attempt > 0:
+                            logger.info(f"      ✅ 连贯性检查通过（重新生成上一章 {coherence_attempt} 次）")
+                        else:
+                            logger.info(f"      ✅ 连贯性检查通过")
+                        break
+                    else:
+                        if coherence_attempt < max_retry:
+                            # 增加上一章预算 20%
+                            old_prev_target = prev_target_chars
+                            prev_target_chars = int(prev_target_chars * 1.2)
+                            
+                            logger.warning(
+                                f"      ⚠️ 连贯性检查不通过: {coherence_result.reason}"
+                            )
+                            logger.warning(
+                                f"      🔄 重新生成上一章 ({coherence_attempt + 1}/{max_retry}) "
+                                f"[{old_prev_target}→{prev_target_chars} 字]"
+                            )
+                            
+                            # 构建上一章的上下文（带额外提示词）
+                            prev_context = {}
+                            if len(results) > 1:
+                                prev_prev = results[-2]
+                                sentences = prev_prev.content.replace('。', '。|').split('|')
+                                prev_context["previous_summary"] = sentences[-2] if len(sentences) > 1 else prev_prev.content[:50]
+                            
+                            # 添加连贯性修复的额外提示词
+                            prev_context["extra_prompt"] = coherence_result.extra_prompt
+                            
+                            # 重新压缩上一章
+                            new_prev_compressed = self.compressor.compress(
+                                chapter_text=prev_data.get("text", ""),
+                                chapter_title=prev_data.get("title", ""),
+                                chapter_index=prev_index,
+                                target_chars=prev_target_chars,
+                                climax_score=prev_data.get("climax_score", 0.5),
+                                coolpoint_types=prev_data.get("coolpoint_types", []),
+                                context=prev_context
+                            )
+                            
+                            # 更新 results 中的上一章
+                            results[-1] = new_prev_compressed
+                            prev_compressed = new_prev_compressed
+                            
+                            # 更新 previous_summary 供下一轮检查
+                            sentences = new_prev_compressed.content.replace('。', '。|').split('|')
+                            previous_summary = sentences[-2] if len(sentences) > 1 else new_prev_compressed.content[:50]
+                        else:
+                            logger.warning(f"      ⚠️ 连贯性检查不通过，已达最大重试次数，保持当前结果")
             
             results.append(compressed)
             
@@ -445,10 +571,11 @@ class SpeedyGenerator:
             elapsed = time.time() - start_time
             processing_times.append(elapsed)
             
-            # 更新上下文（取最后一句作为摘要）
+            # 更新上下文
             if compressed.content:
                 sentences = compressed.content.replace('。', '。|').split('|')
                 previous_summary = sentences[-2] if len(sentences) > 1 else compressed.content[:50]
+            previous_title = title
         
         # 输出总耗时
         total_time = sum(processing_times)
