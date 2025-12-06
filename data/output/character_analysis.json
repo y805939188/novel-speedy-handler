@@ -1,0 +1,227 @@
+{
+  "chapters": [
+    {
+      "chapter_index": 1,
+      "chapter_title": "序",
+      "characters": [
+        {
+          "character_id": "char_0001_萧家废物",
+          "character_name": "萧家废物",
+          "importance_score": 0.9,
+          "screen_time": 0.8,
+          "dialogue_ratio": 0.3,
+          "action_ratio": 0.2,
+          "role": "protagonist",
+          "mention_count": 0,
+          "dialogue_count": 0,
+          "reason": "作为主角，萧家废物在序章中占据了主要篇幅，虽然直接对话和具体行动较少，但其誓言和背景设定对后续剧情的发展具有决定性影响。"
+        }
+      ],
+      "main_characters": [
+        "char_0001_萧家废物"
+      ],
+      "protagonist_screen_time": 0.8,
+      "total_characters": 1,
+      "scene_analyses": []
+    },
+    {
+      "chapter_index": 2,
+      "chapter_title": "第1章 陨落的天才",
+      "characters": [
+        {
+          "character_id": "char_0002_萧炎",
+          "character_name": "萧炎",
+          "importance_score": 0.9,
+          "screen_time": 0.7,
+          "dialogue_ratio": 0.6,
+          "action_ratio": 0.5,
+          "role": "protagonist",
+          "mention_count": 0,
+          "dialogue_count": 0,
+          "reason": "萧炎是本章的核心人物，他的表现和心理变化推动了整个故事的发展。他在本章中占据了大量篇幅，且有多处内心独白和对话描写。"
+        },
+        {
+          "character_id": "char_0005_萧薰儿",
+          "character_name": "萧薰儿",
+          "importance_score": 0.7,
+          "screen_time": 0.3,
+          "dialogue_ratio": 0.3,
+          "action_ratio": 0.3,
+          "role": "deuteragonist",
+          "mention_count": 0,
+          "dialogue_count": 0,
+          "reason": "萧薰儿在本章中对萧炎的情感支持和鼓励显得非常重要，她的出现为萧炎带来了希望。她在测验中的表现和与萧炎的对话都有较多描写，对剧情发展有一定推动作用。"
+        },
+        {
+          "character_id": "char_0004_萧媚",
+          "character_name": "萧媚",
+          "importance_score": 0.5,
+          "screen_time": 0.2,
+          "dialogue_ratio": 0.1,
+          "action_ratio": 0.2,
+          "role": "deuteragonist",
+          "mention_count": 0,
+          "dialogue_count": 0,
+          "reason": "萧媚在本章中起到了对比萧炎的作用，她的表现和态度反映了萧炎的现状。她在测验中的表现和对萧炎的态度都有一定的描写，但整体篇幅不多。"
+        },
+        {
+          "character_id": "char_0003_中年男子",
+          "character_name": "中年男子",
+          "importance_score": 0.3,
+          "screen_time": 0.1,
+          "dialogue_ratio": 0.1,
+          "action_ratio": 0.1,
+          "role": "supporting",
+          "mention_count": 0,
+          "dialogue_count": 0,
+          "reason": "中年男子只是测验员的角色，负责宣布测验结果，对剧情推动作用较小，出现篇幅和对话、行为描写都很少。"
+        }
+      ],
+      "main_characters": [
+        "char_0002_萧炎",
+        "char_0004_萧媚",
+        "char_0005_萧薰儿"
+      ],
+      "protagonist_screen_time": 0.7,
+      "total_characters": 4,
+      "scene_analyses": []
+    },
+    {
+      "chapter_index": 3,
+      "chapter_title": "第2章 斗气大陆",
+      "characters": [
+        {
+          "character_id": "char_0002_萧炎",
+          "character_name": "萧炎",
+          "importance_score": 0.9,
+          "screen_time": 0.8,
+          "dialogue_ratio": 0.7,
+          "action_ratio": 0.6,
+          "role": "protagonist",
+          "mention_count": 0,
+          "dialogue_count": 0,
+          "reason": "萧炎是本章的主要人物，占据了大部分篇幅，通过他的内心独白和行动，读者可以了解到斗气大陆的基本设定和背景。同时，他的情感变化和对未来的担忧也为后续情节的发展埋下了伏笔。"
+        },
+        {
+          "character_id": "char_0006_萧战",
+          "character_name": "萧战",
+          "importance_score": 0.6,
+          "screen_time": 0.2,
+          "dialogue_ratio": 0.3,
+          "action_ratio": 0.2,
+          "role": "deuteragonist",
+          "mention_count": 0,
+          "dialogue_count": 0,
+          "reason": "萧战作为萧炎的父亲和萧家的族长，虽然在本章中出现的时间不多，但他的出现和对话对萧炎的心理状态产生了影响，同时也揭示了萧炎未来可能面临的困境。"
+        }
+      ],
+      "main_characters": [
+        "char_0002_萧炎",
+        "char_0006_萧战"
+      ],
+      "protagonist_screen_time": 0.8,
+      "total_characters": 2,
+      "scene_analyses": []
+    }
+  ],
+  "character_database": {
+    "characters": {
+      "char_0001_萧家废物": {
+        "id": "char_0001_萧家废物",
+        "name": "萧家废物",
+        "aliases": [
+          "萧家"
+        ],
+        "role": "minor",
+        "gender": "male",
+        "description": "年仅15岁的少年，立下誓言要走向斗气大陆巅峰",
+        "first_appearance": 1,
+        "total_mentions": 1,
+        "total_dialogues": 0,
+        "chapters_appeared": [
+          1
+        ]
+      },
+      "char_0002_萧炎": {
+        "id": "char_0002_萧炎",
+        "name": "萧炎",
+        "aliases": [
+          "少年",
+          "炎儿"
+        ],
+        "role": "minor",
+        "gender": "male",
+        "description": "曾是家族中的天才少年，因斗之气消失而跌落神坛，现处于低谷",
+        "first_appearance": 2,
+        "total_mentions": 41,
+        "total_dialogues": 10,
+        "chapters_appeared": [
+          2,
+          3
+        ]
+      },
+      "char_0003_中年男子": {
+        "id": "char_0003_中年男子",
+        "name": "中年男子",
+        "aliases": [],
+        "role": "minor",
+        "gender": "male",
+        "description": "负责测验斗之气的工作人员，态度冷漠",
+        "first_appearance": 2,
+        "total_mentions": 2,
+        "total_dialogues": 1,
+        "chapters_appeared": [
+          2
+        ]
+      },
+      "char_0004_萧媚": {
+        "id": "char_0004_萧媚",
+        "name": "萧媚",
+        "aliases": [
+          "少女"
+        ],
+        "role": "minor",
+        "gender": "female",
+        "description": "家族中的种子级别人物，拥有七段斗之气，受到众人羡慕",
+        "first_appearance": 2,
+        "total_mentions": 7,
+        "total_dialogues": 0,
+        "chapters_appeared": [
+          2
+        ]
+      },
+      "char_0005_萧薰儿": {
+        "id": "char_0005_萧薰儿",
+        "name": "萧薰儿",
+        "aliases": [
+          "紫裙少女"
+        ],
+        "role": "minor",
+        "gender": "female",
+        "description": "家族中最璀璨的明珠，拥有九段斗之气，依然对萧炎保持尊敬",
+        "first_appearance": 2,
+        "total_mentions": 8,
+        "total_dialogues": 2,
+        "chapters_appeared": [
+          2
+        ]
+      },
+      "char_0006_萧战": {
+        "id": "char_0006_萧战",
+        "name": "萧战",
+        "aliases": [
+          "父亲"
+        ],
+        "role": "minor",
+        "gender": "male",
+        "description": "萧家现任族长，萧炎的父亲，五星大斗师，对萧炎十分宠爱。",
+        "first_appearance": 3,
+        "total_mentions": 8,
+        "total_dialogues": 5,
+        "chapters_appeared": [
+          3
+        ]
+      }
+    }
+  }
+}

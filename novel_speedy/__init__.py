@@ -29,11 +29,21 @@ from novel_speedy.budget import (
 )
 from novel_speedy.climax import (
     ClimaxAnalyzer,
-    AnalyzerConfig,
+    AnalyzerConfig as ClimaxAnalyzerConfig,
     ChapterClimaxScore,
     ScoreDimension,
-    analyze_chapter,
-    analyze_chapters
+    analyze_chapter as analyze_chapter_climax,
+    analyze_chapters as analyze_chapters_climax,
+)
+from novel_speedy.character import (
+    Character,
+    CharacterRole,
+    CharacterValue,
+    CharacterDatabase,
+    CharacterAnalyzer,
+    AnalyzerConfig as CharacterAnalyzerConfig,
+    ChapterCharacterAnalysis,
+    analyze_chapters as analyze_chapters_character,
 )
 
 __all__ = [
@@ -66,11 +76,20 @@ __all__ = [
     "format_time",
     # 高潮识别
     "ClimaxAnalyzer",
-    "AnalyzerConfig",
+    "ClimaxAnalyzerConfig",
     "ChapterClimaxScore",
     "ScoreDimension",
-    "analyze_chapter",
-    "analyze_chapters",
+    "analyze_chapter_climax",
+    "analyze_chapters_climax",
+    # 人物价值评分
+    "Character",
+    "CharacterRole",
+    "CharacterValue",
+    "CharacterDatabase",
+    "CharacterAnalyzer",
+    "CharacterAnalyzerConfig",
+    "ChapterCharacterAnalysis",
+    "analyze_chapters_character",
     # 流程
     "process_chapters",
     "save_results",
