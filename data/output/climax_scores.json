@@ -2,7 +2,7 @@
   {
     "chapter_index": 1,
     "chapter_title": "序",
-    "final_score": 0.3788,
+    "final_score": 0.3695,
     "is_climax": false,
     "climax_tags": [],
     "summary": "平缓章节，开篇章节（第1章）",
@@ -16,8 +16,8 @@
       {
         "dimension": "coolpoint",
         "score": 0.3,
-        "confidence": 0.5,
-        "reason": "二次解析失败"
+        "confidence": 0.8,
+        "reason": ""
       },
       {
         "dimension": "rhythm",
@@ -41,13 +41,13 @@
     "climax_tags": [
       "激烈冲突"
     ],
-    "summary": "中等章节，强烈的内心挣扎与外界的嘲讽形成鲜明对比，危机感强烈，但转折稍显温和。",
+    "summary": "中等章节，强烈的内心挣扎与外界的冷漠形成鲜明对比，危机感强烈，但转折稍显温和。",
     "dimension_scores": [
       {
         "dimension": "conflict",
         "score": 0.85,
         "confidence": 0.9,
-        "reason": "强烈的内心挣扎与外界的嘲讽形成鲜明对比，危机感强烈，但转折稍显温和。"
+        "reason": "强烈的内心挣扎与外界的冷漠形成鲜明对比，危机感强烈，但转折稍显温和。"
       },
       {
         "dimension": "coolpoint",
@@ -77,13 +77,13 @@
     "climax_tags": [
       "激烈冲突"
     ],
-    "summary": "中等章节，内部冲突强烈，主角面临身份认同和未来前景的双重压力。",
+    "summary": "中等章节，强烈的内心挣扎与未来的危机感，外部冲突较少但存在家庭压力。",
     "dimension_scores": [
       {
         "dimension": "conflict",
         "score": 0.7,
         "confidence": 0.85,
-        "reason": "内部冲突强烈，主角面临身份认同和未来前景的双重压力。"
+        "reason": "强烈的内心挣扎与未来的危机感，外部冲突较少但存在家庭压力。"
       },
       {
         "dimension": "coolpoint",
@@ -108,7 +108,7 @@
   {
     "chapter_index": 4,
     "chapter_title": "第3章 客人",
-    "final_score": 0.3894,
+    "final_score": 0.379,
     "is_climax": false,
     "climax_tags": [
       "激烈冲突"
@@ -124,8 +124,8 @@
       {
         "dimension": "coolpoint",
         "score": 0.3,
-        "confidence": 0.5,
-        "reason": "二次解析失败"
+        "confidence": 0.8,
+        "reason": ""
       },
       {
         "dimension": "rhythm",

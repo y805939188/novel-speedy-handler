@@ -63,15 +63,24 @@ def _build_coolpoint_prompt(chapter_text: str, chapter_title: str) -> str:
     if len(chapter_text) > max_len:
         text_preview += f"\n\n[...章节共 {len(chapter_text)} 字，已截取前 {max_len} 字...]"
     
-    return f"""分析章节"爽点"：
+    return f"""【任务】分析章节是否包含"爽点"情节
 
 【标题】{chapter_title}
 
-【内容】
-{text_preview}
+【内容摘要】
+{text_preview[:3000]}
 
-按以下格式输出JSON（无爽点时score填0.2，coolpoint_types填空数组）：
-{{"score": 0.6, "confidence": 0.8, "coolpoint_types": ["reversal"], "intensity": 0.5, "satisfaction": 0.6, "reason": "主角逆袭成功"}}"""
+【输出要求】
+严格按照下面的JSON格式输出，必须包含所有字段：
+- score: 爽点强度(0.0-1.0)，无爽点填0.2
+- confidence: 置信度(0.0-1.0)
+- coolpoint_types: 爽点类型数组，可选值[reversal,level_up,face_slap,treasure,revenge,rescue,recognition,breakthrough]，无则填[]
+- reason: 简短理由(20字内)
+
+【示例输出】
+{{"score":0.2,"confidence":0.8,"coolpoint_types":[],"reason":"本章无明显爽点"}}
+
+现在请分析并输出JSON："""
 
 
 @PluginRegistry.register
@@ -111,14 +120,25 @@ class CoolpointPlugin(ClimaxPlugin):
                 system_message=COOLPOINT_SYSTEM_PROMPT
             )
             
+            logger.debug(f"[爽点评分] 原始响应: {raw_response[:300]}")
+            
             # 尝试解析 JSON
             try:
                 result = json.loads(raw_response)
-            except json.JSONDecodeError:
-                # 如果直接解析失败，尝试从文本中提取 JSON
-                logger.warning(f"[爽点评分] 原始响应解析失败，尝试提取: {raw_response[:200]}")
-                # 使用默认值
-                result = {"score": 0.3, "confidence": 0.5, "reason": "解析失败"}
+            except json.JSONDecodeError as e:
+                # 尝试手动提取 JSON 对象
+                import re
+                json_match = re.search(r'\{[^{}]*\}', raw_response)
+                if json_match:
+                    try:
+                        result = json.loads(json_match.group())
+                        logger.info(f"[爽点评分] 手动提取 JSON 成功")
+                    except json.JSONDecodeError:
+                        logger.warning(f"[爽点评分] 解析失败，原始响应: {raw_response[:200]}")
+                        result = {"score": 0.3, "confidence": 0.5, "reason": "解析失败"}
+                else:
+                    logger.warning(f"[爽点评分] 未找到 JSON，原始响应: {raw_response[:200]}")
+                    result = {"score": 0.3, "confidence": 0.5, "reason": "解析失败"}
             
             # 处理返回结果可能是列表的情况
             if isinstance(result, list):

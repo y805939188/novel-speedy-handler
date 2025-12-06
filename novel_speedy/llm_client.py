@@ -90,7 +90,8 @@ def call_llm(
         "model": cfg.model,
         "messages": full_messages,
         "temperature": temperature,
-        "max_tokens": max_tokens
+        "max_tokens": max_tokens,
+        "chat_template_kwargs": {"enable_thinking": False}
     }
     
     last_error = None
