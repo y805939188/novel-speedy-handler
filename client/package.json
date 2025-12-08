@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "i18next": "^25.7.1",
     "lucide-react": "^0.556.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-i18next": "^16.4.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

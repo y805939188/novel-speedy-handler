@@ -1,0 +1,88 @@
+{
+  "header": {
+    "title": "Novel Speed Reader Generator",
+    "subtitle": "Compress long novels into speed-reading versions to save your reading time"
+  },
+  "upload": {
+    "selectFile": "Click or drag to upload a novel TXT file",
+    "supportedEncoding": "Supports UTF-8 and GBK encoding",
+    "analyzing": "Analyzing chapter structure...",
+    "txtOnly": "Please select a TXT format file"
+  },
+  "analysis": {
+    "title": "File Analysis Result",
+    "chapters": "Chapters",
+    "totalChars": "Total Characters",
+    "recommendedTime": "Recommended Min Reading Time",
+    "chaptersUnit": "chapters",
+    "charsUnit": "chars",
+    "minutesUnit": "minutes",
+    "chapterPreview": "Chapter Preview:",
+    "totalChapters": "...total {{count}} chapters"
+  },
+  "form": {
+    "readingSpeed": "Reading Speed (chars/min)",
+    "readingSpeedHint": "Average reading speed is 200-400 chars/min",
+    "targetTime": "Target Reading Time (minutes)",
+    "estimatedChars": "Estimated {{count}} characters",
+    "outputStyle": "Output Style",
+    "outputMode": "Output Mode",
+    "maxChapters": "Process Only First N Chapters (optional)",
+    "maxChaptersPlaceholder": "Leave empty for all",
+    "advancedOptions": "Advanced Options",
+    "collapseAdvanced": "Collapse Advanced Options",
+    "expandAdvanced": "Expand Advanced Options"
+  },
+  "styles": {
+    "default": "Plain Vernacular (Default)",
+    "pingshu": "Storytelling Style",
+    "ancient": "Classical Chinese Style",
+    "humor": "Humorous Style",
+    "dramatic": "Dramatic Style",
+    "minimalist": "Minimalist Style",
+    "storytelling": "Narrative Style"
+  },
+  "outputModes": {
+    "continuous": "Continuous (Recommended)",
+    "chapter": "By Chapter"
+  },
+  "features": {
+    "climaxAnalysis": "Enable Climax Scoring System",
+    "climaxEnabled": "Important chapters will get more character budget (increases processing time)",
+    "climaxDisabled": "Allocate budget by chapter length (faster processing)",
+    "qualityCheck": "Enable Quality Check",
+    "qualityEnabled": "Auto-detect if summary is complete, regenerate if incomplete (max 3 retries)",
+    "qualityDisabled": "No completeness check, use generated result directly"
+  },
+  "buttons": {
+    "uploadFirst": "Please upload a novel file first",
+    "analyzing": "Analyzing...",
+    "creating": "Creating task...",
+    "startGenerate": "Start Generating Speed-Reading Version",
+    "download": "Download Speed-Reading Version",
+    "continueOther": "Continue with Other Novels",
+    "retry": "Retry"
+  },
+  "status": {
+    "processing": "Generating speed-reading version...",
+    "processingHint": "This may take a few minutes, please wait",
+    "completed": "Generation Complete!",
+    "failed": "Processing Failed",
+    "taskId": "Task ID:",
+    "filename": "Filename:",
+    "inProgress": "Processing..."
+  },
+  "errors": {
+    "uploadFirst": "Please upload and analyze a novel file first",
+    "analyzeFailed": "Analysis failed",
+    "createTaskFailed": "Failed to create task",
+    "pollFailed": "Failed to poll status",
+    "calculateFailed": "Failed to calculate recommendation"
+  },
+  "footer": {
+    "copyright": "Novel Speed Reader Generator © 2024"
+  },
+  "language": {
+    "switch": "Language"
+  }
+}

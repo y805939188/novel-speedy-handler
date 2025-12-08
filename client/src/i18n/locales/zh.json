@@ -1,0 +1,88 @@
+{
+  "header": {
+    "title": "小说速读生成器",
+    "subtitle": "将长篇小说压缩为速读版本，节省您的阅读时间"
+  },
+  "upload": {
+    "selectFile": "点击或拖拽上传小说 TXT 文件",
+    "supportedEncoding": "支持 UTF-8 和 GBK 编码",
+    "analyzing": "正在分析章节结构...",
+    "txtOnly": "请选择 TXT 格式的文件"
+  },
+  "analysis": {
+    "title": "文件分析结果",
+    "chapters": "章节数量",
+    "totalChars": "总字数",
+    "recommendedTime": "推荐最低阅读时间",
+    "chaptersUnit": "章",
+    "charsUnit": "字",
+    "minutesUnit": "分钟",
+    "chapterPreview": "章节预览：",
+    "totalChapters": "...共 {{count}} 章"
+  },
+  "form": {
+    "readingSpeed": "阅读速度（字/分钟）",
+    "readingSpeedHint": "普通人阅读速度约 200-400 字/分钟",
+    "targetTime": "目标阅读时间（分钟）",
+    "estimatedChars": "预计生成 {{count}} 字",
+    "outputStyle": "输出风格",
+    "outputMode": "输出模式",
+    "maxChapters": "仅处理前 N 章（可选）",
+    "maxChaptersPlaceholder": "留空表示全部",
+    "advancedOptions": "高级选项",
+    "collapseAdvanced": "收起高级选项",
+    "expandAdvanced": "展开高级选项"
+  },
+  "styles": {
+    "default": "普通白话文（默认）",
+    "pingshu": "评书风格",
+    "ancient": "古文风格",
+    "humor": "幽默风趣",
+    "dramatic": "戏剧化",
+    "minimalist": "极简风格",
+    "storytelling": "讲故事风格"
+  },
+  "outputModes": {
+    "continuous": "整体连贯（推荐）",
+    "chapter": "按章节"
+  },
+  "features": {
+    "climaxAnalysis": "启用高潮评分系统",
+    "climaxEnabled": "重要章节将获得更多字数预算（处理时间增加）",
+    "climaxDisabled": "按章节长度分配预算（处理更快）",
+    "qualityCheck": "启用质量自检",
+    "qualityEnabled": "自动检测摘要是否完整，不完整则重新生成（最多重试3次）",
+    "qualityDisabled": "不检测摘要完整性，直接使用生成结果"
+  },
+  "buttons": {
+    "uploadFirst": "请先上传小说文件",
+    "analyzing": "分析中...",
+    "creating": "创建任务中...",
+    "startGenerate": "开始生成速读版",
+    "download": "下载速读版",
+    "continueOther": "继续处理其他小说",
+    "retry": "重新尝试"
+  },
+  "status": {
+    "processing": "正在生成速读版...",
+    "processingHint": "这可能需要几分钟，请耐心等待",
+    "completed": "生成完成！",
+    "failed": "处理失败",
+    "taskId": "任务 ID:",
+    "filename": "文件名:",
+    "inProgress": "正在处理中..."
+  },
+  "errors": {
+    "uploadFirst": "请先上传并分析小说文件",
+    "analyzeFailed": "分析失败",
+    "createTaskFailed": "创建任务失败",
+    "pollFailed": "轮询状态失败",
+    "calculateFailed": "计算推荐值失败"
+  },
+  "footer": {
+    "copyright": "小说速读生成器 © 2024"
+  },
+  "language": {
+    "switch": "语言"
+  }
+}

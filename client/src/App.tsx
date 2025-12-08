@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { 
   Upload, 
   BookOpen, 
@@ -15,20 +16,21 @@ import {
   Hash,
   Type
 } from 'lucide-react'
+import { LanguageSwitch } from './components/LanguageSwitch'
 import './App.css'
 
 // API 基础路径
 const API_BASE = '/api'
 
-// 风格选项
+// 风格选项 key 映射
 const STYLE_OPTIONS = [
-  { value: '', label: '普通白话文（默认）' },
-  { value: 'pingshu', label: '评书风格' },
-  { value: 'ancient', label: '古文风格' },
-  { value: 'humor', label: '幽默风趣' },
-  { value: 'dramatic', label: '戏剧化' },
-  { value: 'minimalist', label: '极简风格' },
-  { value: 'storytelling', label: '讲故事风格' },
+  { value: '', labelKey: 'styles.default' },
+  { value: 'pingshu', labelKey: 'styles.pingshu' },
+  { value: 'ancient', labelKey: 'styles.ancient' },
+  { value: 'humor', labelKey: 'styles.humor' },
+  { value: 'dramatic', labelKey: 'styles.dramatic' },
+  { value: 'minimalist', labelKey: 'styles.minimalist' },
+  { value: 'storytelling', labelKey: 'styles.storytelling' },
 ]
 
 // 任务状态类型
@@ -61,6 +63,8 @@ interface Recommendation {
 }
 
 function App() {
+  const { t } = useTranslation()
+  
   // 表单状态
   const [file, setFile] = useState<File | null>(null)
   const [readingSpeed, setReadingSpeed] = useState(300)
@@ -96,7 +100,7 @@ function App() {
           setCurrentTask(data)
         }
       } catch (e) {
-        console.error('轮询状态失败', e)
+        console.error(t('errors.pollFailed'), e)
       }
     }, 2000)
 
@@ -109,7 +113,7 @@ function App() {
     if (!selectedFile) return
     
     if (!selectedFile.name.endsWith('.txt')) {
-      setError('请选择 TXT 格式的文件')
+      setError(t('upload.txtOnly'))
       return
     }
     
@@ -130,7 +134,7 @@ function App() {
       
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.detail || '分析失败')
+        throw new Error(data.detail || t('errors.analyzeFailed'))
       }
       
       const data: AnalyzeResult = await res.json()
@@ -148,7 +152,7 @@ function App() {
       })
       
     } catch (e) {
-      setError(e instanceof Error ? e.message : '分析失败')
+      setError(e instanceof Error ? e.message : t('errors.analyzeFailed'))
       setFile(null)
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
       if (fileInput) fileInput.value = ''
@@ -180,7 +184,7 @@ function App() {
         setTargetTime(Math.ceil(data.recommended_reading_time * 1.1))
       }
     } catch (e) {
-      console.error('计算推荐值失败', e)
+      console.error(t('errors.calculateFailed'), e)
     }
   }, [analyzeResult, readingSpeed, maxChapters])
   
@@ -195,7 +199,7 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!analyzeResult) {
-      setError('请先上传并分析小说文件')
+      setError(t('errors.uploadFirst'))
       return
     }
 
@@ -230,12 +234,12 @@ function App() {
         task_id: data.task_id,
         filename: analyzeResult.filename,
         status: 'processing',
-        message: '正在处理中...',
+        message: t('status.inProgress'),
         created_at: new Date().toISOString(),
       })
       
     } catch (e) {
-      setError(e instanceof Error ? e.message : '创建任务失败')
+      setError(e instanceof Error ? e.message : t('errors.createTaskFailed'))
     } finally {
       setUploading(false)
     }
@@ -266,9 +270,10 @@ function App() {
         <div className="header-content">
           <div className="logo">
             <BookOpen size={32} />
-            <h1>小说速读生成器</h1>
+            <h1>{t('header.title')}</h1>
           </div>
-          <p className="subtitle">将长篇小说压缩为速读版本，节省您的阅读时间</p>
+          <p className="subtitle">{t('header.subtitle')}</p>
+          <LanguageSwitch />
         </div>
       </header>
 
@@ -292,7 +297,7 @@ function App() {
                   {analyzing ? (
                     <>
                       <Loader2 size={48} className="spin" />
-                      <span>正在分析章节结构...</span>
+                      <span>{t('upload.analyzing')}</span>
                     </>
                   ) : file ? (
                     <>
@@ -305,8 +310,8 @@ function App() {
                   ) : (
                     <>
                       <Upload size={48} />
-                      <span>点击或拖拽上传小说 TXT 文件</span>
-                      <span className="hint">支持 UTF-8 和 GBK 编码</span>
+                      <span>{t('upload.selectFile')}</span>
+                      <span className="hint">{t('upload.supportedEncoding')}</span>
                     </>
                   )}
                 </label>
@@ -317,35 +322,35 @@ function App() {
                 <div className="analyze-result">
                   <div className="result-header">
                     <Info size={20} />
-                    <h3>文件分析结果</h3>
+                    <h3>{t('analysis.title')}</h3>
                   </div>
                   <div className="result-stats">
                     <div className="stat-item">
                       <Hash size={16} />
-                      <span className="stat-label">章节数量</span>
-                      <span className="stat-value">{analyzeResult.total_chapters} 章</span>
+                      <span className="stat-label">{t('analysis.chapters')}</span>
+                      <span className="stat-value">{analyzeResult.total_chapters} {t('analysis.chaptersUnit')}</span>
                     </div>
                     <div className="stat-item">
                       <Type size={16} />
-                      <span className="stat-label">总字数</span>
-                      <span className="stat-value">{analyzeResult.total_chars.toLocaleString()} 字</span>
+                      <span className="stat-label">{t('analysis.totalChars')}</span>
+                      <span className="stat-value">{analyzeResult.total_chars.toLocaleString()} {t('analysis.charsUnit')}</span>
                     </div>
                     <div className="stat-item recommended">
                       <Clock size={16} />
-                      <span className="stat-label">推荐最低阅读时间</span>
+                      <span className="stat-label">{t('analysis.recommendedTime')}</span>
                       <span className="stat-value highlight">
-                        {recommendation?.recommended_reading_time || analyzeResult.recommended_reading_time} 分钟
+                        {recommendation?.recommended_reading_time || analyzeResult.recommended_reading_time} {t('analysis.minutesUnit')}
                       </span>
                     </div>
                   </div>
                   {analyzeResult.chapters_preview.length > 0 && (
                     <div className="chapters-preview">
-                      <span className="preview-label">章节预览：</span>
+                      <span className="preview-label">{t('analysis.chapterPreview')}</span>
                       {analyzeResult.chapters_preview.slice(0, 3).map((ch, i) => (
                         <span key={i} className="preview-chapter">{ch.title}</span>
                       ))}
                       {analyzeResult.total_chapters > 3 && (
-                        <span className="preview-more">...共 {analyzeResult.total_chapters} 章</span>
+                        <span className="preview-more">{t('analysis.totalChapters', { count: analyzeResult.total_chapters })}</span>
                       )}
                     </div>
                   )}
@@ -357,7 +362,7 @@ function App() {
                 <div className="form-group">
                   <label>
                     <Zap size={16} />
-                    阅读速度（字/分钟）
+                    {t('form.readingSpeed')}
                   </label>
                   <input
                     type="number"
@@ -367,13 +372,13 @@ function App() {
                     max={1000}
                     required
                   />
-                  <span className="hint">普通人阅读速度约 200-400 字/分钟</span>
+                  <span className="hint">{t('form.readingSpeedHint')}</span>
                 </div>
 
                 <div className="form-group">
                   <label>
                     <Clock size={16} />
-                    目标阅读时间（分钟）
+                    {t('form.targetTime')}
                   </label>
                   <input
                     type="number"
@@ -384,7 +389,7 @@ function App() {
                     required
                   />
                   <span className="hint">
-                    预计生成 {(targetTime * readingSpeed).toLocaleString()} 字
+                    {t('form.estimatedChars', { count: targetTime * readingSpeed })}
                   </span>
                 </div>
               </div>
@@ -397,7 +402,7 @@ function App() {
                   onClick={() => setShowAdvanced(!showAdvanced)}
                 >
                   <Settings size={16} />
-                  {showAdvanced ? '收起高级选项' : '展开高级选项'}
+                  {showAdvanced ? t('form.collapseAdvanced') : t('form.expandAdvanced')}
                 </button>
               </div>
 
@@ -407,7 +412,7 @@ function App() {
                     <div className="form-group">
                       <label>
                         <Sparkles size={16} />
-                        输出风格
+                        {t('form.outputStyle')}
                       </label>
                       <select
                         value={style}
@@ -415,31 +420,31 @@ function App() {
                       >
                         {STYLE_OPTIONS.map((opt) => (
                           <option key={opt.value} value={opt.value}>
-                            {opt.label}
+                            {t(opt.labelKey)}
                           </option>
                         ))}
                       </select>
                     </div>
 
                     <div className="form-group">
-                      <label>输出模式</label>
+                      <label>{t('form.outputMode')}</label>
                       <select
                         value={outputMode}
                         onChange={(e) => setOutputMode(e.target.value)}
                       >
-                        <option value="continuous">整体连贯（推荐）</option>
-                        <option value="chapter">按章节</option>
+                        <option value="continuous">{t('outputModes.continuous')}</option>
+                        <option value="chapter">{t('outputModes.chapter')}</option>
                       </select>
                     </div>
 
                     <div className="form-group">
-                      <label>仅处理前 N 章（可选）</label>
+                      <label>{t('form.maxChapters')}</label>
                       <input
                         type="number"
                         value={maxChapters}
                         onChange={(e) => setMaxChapters(e.target.value ? Number(e.target.value) : '')}
                         min={1}
-                        placeholder="留空表示全部"
+                        placeholder={t('form.maxChaptersPlaceholder')}
                       />
                     </div>
                   </div>
@@ -454,11 +459,11 @@ function App() {
                       />
                       <span className="toggle-switch"></span>
                       <span className="toggle-text">
-                        🔥 启用高潮评分系统
+                        🔥 {t('features.climaxAnalysis')}
                         <span className="toggle-hint">
                           {enableClimaxAnalysis 
-                            ? '重要章节将获得更多字数预算（处理时间增加）' 
-                            : '按章节长度分配预算（处理更快）'}
+                            ? t('features.climaxEnabled')
+                            : t('features.climaxDisabled')}
                         </span>
                       </span>
                     </label>
@@ -474,11 +479,11 @@ function App() {
                       />
                       <span className="toggle-switch"></span>
                       <span className="toggle-text">
-                        ✅ 启用质量自检
+                        ✅ {t('features.qualityCheck')}
                         <span className="toggle-hint">
                           {enableQualityCheck 
-                            ? '自动检测摘要是否完整，不完整则重新生成（最多重试3次）' 
-                            : '不检测摘要完整性，直接使用生成结果'}
+                            ? t('features.qualityEnabled')
+                            : t('features.qualityDisabled')}
                         </span>
                       </span>
                     </label>
@@ -503,22 +508,22 @@ function App() {
                 {uploading ? (
                   <>
                     <Loader2 size={20} className="spin" />
-                    创建任务中...
+                    {t('buttons.creating')}
                   </>
                 ) : analyzing ? (
                   <>
                     <Loader2 size={20} className="spin" />
-                    分析中...
+                    {t('buttons.analyzing')}
                   </>
                 ) : !analyzeResult ? (
                   <>
                     <Upload size={20} />
-                    请先上传小说文件
+                    {t('buttons.uploadFirst')}
                   </>
                 ) : (
                   <>
                     <Sparkles size={20} />
-                    开始生成速读版
+                    {t('buttons.startGenerate')}
                   </>
                 )}
               </button>
@@ -532,8 +537,8 @@ function App() {
                 {currentTask.status === 'processing' && (
                   <>
                     <Loader2 size={64} className="spin" />
-                    <h2>正在生成速读版...</h2>
-                    <p>这可能需要几分钟，请耐心等待</p>
+                    <h2>{t('status.processing')}</h2>
+                    <p>{t('status.processingHint')}</p>
                     <div className="progress-bar">
                       <div className="progress-fill"></div>
                     </div>
@@ -543,15 +548,15 @@ function App() {
                 {currentTask.status === 'completed' && (
                   <>
                     <CheckCircle size={64} />
-                    <h2>生成完成！</h2>
+                    <h2>{t('status.completed')}</h2>
                     <p>{currentTask.message}</p>
                     <div className="action-buttons">
                       <button className="download-btn" onClick={handleDownload}>
                         <Download size={20} />
-                        下载速读版
+                        {t('buttons.download')}
                       </button>
                       <button className="reset-btn" onClick={handleReset}>
-                        继续处理其他小说
+                        {t('buttons.continueOther')}
                       </button>
                     </div>
                   </>
@@ -560,18 +565,18 @@ function App() {
                 {currentTask.status === 'failed' && (
                   <>
                     <AlertCircle size={64} />
-                    <h2>处理失败</h2>
+                    <h2>{t('status.failed')}</h2>
                     <p>{currentTask.message}</p>
                     <button className="reset-btn" onClick={handleReset}>
-                      重新尝试
+                      {t('buttons.retry')}
                     </button>
                   </>
                 )}
               </div>
 
               <div className="task-info">
-                <p><strong>任务 ID:</strong> {currentTask.task_id}</p>
-                <p><strong>文件名:</strong> {currentTask.filename}</p>
+                <p><strong>{t('status.taskId')}</strong> {currentTask.task_id}</p>
+                <p><strong>{t('status.filename')}</strong> {currentTask.filename}</p>
               </div>
             </div>
           )}
@@ -580,7 +585,7 @@ function App() {
 
       {/* 页脚 */}
       <footer className="footer">
-        <p>小说速读生成器 © 2024</p>
+        <p>{t('footer.copyright')}</p>
       </footer>
     </div>
   )
